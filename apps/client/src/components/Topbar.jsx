@@ -5,6 +5,8 @@ export function Topbar({ currentView, onNavigate, user, onOpenAuth, onNotify }) 
     switch (currentView) {
       case "dashboard":
         return "Home Dashboard";
+      case "labs":
+        return "My Labs · Assigned Practicals";
       case "bench":
         return "Virtual Bench · Interactive Lab";
       case "practice":

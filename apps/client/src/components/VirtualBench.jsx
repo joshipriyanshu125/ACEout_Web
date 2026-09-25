@@ -2,14 +2,50 @@ import { useState, useEffect, useRef } from "react";
 
 export function VirtualBench({
   initialBench = "pendulum",
+  activeLab = null,
   onLogObservation,
   onNotify,
   onAddXp,
+  onBackToLabs,
 }) {
   const [activeTab, setActiveTab] = useState(initialBench);
 
   return (
     <section className="page bench-page">
+      {/* Shows which assigned lab these readings are being graded against. */}
+      {activeLab ? (
+        <div className="active-lab-banner">
+          <div>
+            <p className="eyebrow">RECORDING FOR</p>
+            <strong>{activeLab.title}</strong>
+            <small>
+              {activeLab.observationCount ?? 0}/{activeLab.requiredObservations} readings logged
+              {activeLab.dueAt &&
+                ` · due ${new Date(activeLab.dueAt).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                })}`}
+            </small>
+          </div>
+          <button className="text-action-btn" onClick={onBackToLabs}>
+            Back to my labs →
+          </button>
+        </div>
+      ) : (
+        <div className="active-lab-banner warning">
+          <div>
+            <strong>Free practice mode</strong>
+            <small>
+              Readings here are <b>not</b> graded. Open a lab from My Labs to have your work
+              assessed.
+            </small>
+          </div>
+          <button className="text-action-btn" onClick={onBackToLabs}>
+            Go to my labs →
+          </button>
+        </div>
+      )}
+
       <div className="bench-header-row">
         <div>
           <p className="eyebrow purple">INTERACTIVE SIMULATION LAB</p>

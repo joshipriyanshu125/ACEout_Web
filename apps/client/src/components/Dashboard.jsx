@@ -1,13 +1,17 @@
-import { EXPERIMENTS } from "../services/storage.js";
-
 export function Dashboard({
   user,
   quests,
+  labs = [],
+  className,
   onOpenBench,
+  onOpenLabs,
   onOpenPractice,
   onOpenQuests,
   onOpenNotebook,
 }) {
+  // The next lab to work on: first one not yet submitted.
+  const nextLab = labs.find((l) => l.status !== "SUBMITTED") || labs[0] || null;
+  const submittedCount = labs.filter((l) => l.status === "SUBMITTED").length;
   const todayDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
@@ -43,19 +47,29 @@ export function Dashboard({
       {/* Hero Focus Card */}
       <section className="focus-card">
         <div className="focus-copy">
-          <p className="eyebrow light">YOUR NEXT PRACTICAL SESSION</p>
-          <h2>Motion &amp; Measurement: Simple Pendulum</h2>
+          <p className="eyebrow light">
+            {nextLab ? "YOUR NEXT PRACTICAL SESSION" : "NOTHING ASSIGNED YET"}
+          </p>
+          <h2>{nextLab ? nextLab.title : "Waiting on your teacher"}</h2>
           <p>
-            Adjust string length, change gravitational acceleration (Earth/Moon/Jupiter), release at varying angles, and calculate acceleration due to gravity (g).
+            {nextLab
+              ? nextLab.description
+              : "Your teacher unlocks labs as the syllabus moves forward. They'll show up here the moment one opens."}
           </p>
           <div className="tags-container">
-            <span className="tag">PHYSICS</span>
-            <span className="tag">CLASS 10</span>
-            <span className="tag">18 MIN</span>
-            <span className="tag ready">3D BENCH READY</span>
+            {nextLab ? (
+              <>
+                <span className="tag">{nextLab.subject.toUpperCase()}</span>
+                <span className="tag">{nextLab.grade.toUpperCase()}</span>
+                <span className="tag">{nextLab.durationMinutes} MIN</span>
+                <span className="tag ready">{nextLab.difficulty.toUpperCase()}</span>
+              </>
+            ) : (
+              <span className="tag">NO LABS UNLOCKED</span>
+            )}
           </div>
-          <button className="primary-action" onClick={() => onOpenBench("pendulum")}>
-            Launch Virtual Bench <span>→</span>
+          <button className="primary-action" onClick={onOpenLabs}>
+            {nextLab ? "Open my labs" : "Check my labs"} <span>→</span>
           </button>
         </div>
 
@@ -152,35 +166,47 @@ export function Dashboard({
       <section className="lab-modules-section">
         <div className="section-head">
           <div>
-            <p className="eyebrow">EXPLORE VIRTUAL BENCHES</p>
-            <h3>Interactive Science Practicals</h3>
+            <p className="eyebrow">
+              {className ? `UNLOCKED IN ${className.toUpperCase()}` : "YOUR ASSIGNED LABS"}
+            </p>
+            <h3>
+              Interactive Science Practicals
+              {labs.length > 0 && ` · ${submittedCount}/${labs.length} done`}
+            </h3>
           </div>
-          <button className="text-action-btn" onClick={onOpenPractice}>
-            Take precision quiz →
+          <button className="text-action-btn" onClick={onOpenLabs}>
+            See all my labs →
           </button>
         </div>
 
-        <div className="modules-grid">
-          {EXPERIMENTS.map((exp) => (
-            <div key={exp.id} className="module-card">
-              <div className="module-header">
-                <span className={`subject-badge ${exp.subject}`}>{exp.subject.toUpperCase()}</span>
-                <span className="difficulty-badge">{exp.difficulty}</span>
+        {labs.length === 0 ? (
+          <div className="empty-state">
+            No labs unlocked yet. Your teacher will open them as the syllabus progresses.
+          </div>
+        ) : (
+          <div className="modules-grid">
+            {labs.map((lab) => (
+              <div key={lab.id} className="module-card">
+                <div className="module-header">
+                  <span className={`subject-badge ${lab.subject}`}>
+                    {lab.subject.toUpperCase()}
+                  </span>
+                  <span className="difficulty-badge">
+                    {lab.status === "SUBMITTED" ? `✓ ${lab.score}%` : lab.difficulty}
+                  </span>
+                </div>
+                <h4>{lab.title}</h4>
+                <p>{lab.description}</p>
+                <div className="module-footer">
+                  <span className="duration-tag">⏱ {lab.durationMinutes} min</span>
+                  <button className="open-module-btn" onClick={onOpenLabs}>
+                    {lab.status === "SUBMITTED" ? "View result" : "Open lab"} <span>→</span>
+                  </button>
+                </div>
               </div>
-              <h4>{exp.title}</h4>
-              <p>{exp.description}</p>
-              <div className="module-footer">
-                <span className="duration-tag">⏱ {exp.durationMinutes} min</span>
-                <button
-                  className="open-module-btn"
-                  onClick={() => onOpenBench(exp.benchType)}
-                >
-                  Launch Bench <span>→</span>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Quick Resume Strip */}
