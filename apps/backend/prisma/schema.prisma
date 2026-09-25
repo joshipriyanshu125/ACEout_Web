@@ -1,0 +1,218 @@
+// ACEout Virtual Lab — data model
+// Teachers own classes, unlock labs for a class as the syllabus progresses,
+// and review auto-scored student attempts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+}
+
+model User {
+  id           String  @id @default(cuid())
+  name         String
+  email        String  @unique
+  passwordHash String
+  role         Role    @default(STUDENT)
+  grade        String?
+  board        String?
+
+  // Gamification carried over from the original student app
+  xp               Int @default(0)
+  streak           Int @default(0)
+  bestStreak       Int @default(0)
+  sessionsThisWeek Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teachingClasses Class[]      @relation("ClassTeacher")
+  enrollments     Enrollment[]
+  attempts        LabAttempt[] @relation("AttemptStudent")
+  gradedAttempts  LabAttempt[] @relation("AttemptGrader")
+  unlocksMade     LabUnlock[]  @relation("UnlockAuthor")
+
+  @@index([role])
+}
+
+model Class {
+  id       String  @id @default(cuid())
+  name     String
+  subject  String  @default("physics")
+  grade    String
+  board    String  @default("CBSE")
+  joinCode String  @unique
+  archived Boolean @default(false)
+
+  teacherId String
+  teacher   User   @relation("ClassTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments Enrollment[]
+  unlocks     LabUnlock[]
+  attempts    LabAttempt[]
+
+  @@index([teacherId])
+}
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  classId   String
+  studentId String
+  joinedAt  DateTime @default(now())
+
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  student User  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, studentId])
+  @@index([studentId])
+}
+
+model Lab {
+  id              String   @id // slug, e.g. "pendulum-1"
+  title           String
+  subject         String
+  grade           String
+  durationMinutes Int
+  difficulty      String
+  description     String
+  benchType       String // pendulum | sound | caliper — drives the VirtualBench sim
+  tags            String[]
+  orderIndex      Int      @default(0)
+  isReady         Boolean  @default(true)
+
+  // Minimum readings a student must log for full observation credit
+  requiredObservations Int @default(3)
+
+  createdAt DateTime @default(now())
+
+  questions QuizQuestion[]
+  unlocks   LabUnlock[]
+  attempts  LabAttempt[]
+
+  @@index([orderIndex])
+}
+
+model QuizQuestion {
+  id              String   @id @default(cuid())
+  labId           String
+  number          Int
+  title           String
+  subtitle        String
+  instrumentType  String
+  displayValue    String
+  leastCount      String
+  options         String[]
+  correctIndex    Int
+  hintTitle       String
+  hintDescription String
+  explanation     String
+
+  lab       Lab            @relation(fields: [labId], references: [id], onDelete: Cascade)
+  responses QuizResponse[]
+
+  @@unique([labId, number])
+}
+
+/// A lab made available to one class. Absence of a row means the lab is locked.
+model LabUnlock {
+  id      String @id @default(cuid())
+  classId String
+  labId   String
+
+  unlockedAt DateTime  @default(now())
+  /// Optional deadline — the "time slot" after which the teacher reviews results.
+  dueAt      DateTime?
+  /// Set when the teacher re-locks; keeps the history instead of deleting.
+  closedAt   DateTime?
+
+  unlockedById String?
+  unlockedBy   User?   @relation("UnlockAuthor", fields: [unlockedById], references: [id], onDelete: SetNull)
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  lab   Lab   @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, labId])
+  @@index([classId])
+}
+
+/// One student's work on one lab within one class.
+model LabAttempt {
+  id        String @id @default(cuid())
+  studentId String
+  labId     String
+  classId   String
+
+  status      AttemptStatus @default(IN_PROGRESS)
+  startedAt   DateTime      @default(now())
+  submittedAt DateTime?
+  /// Accumulated active time on the bench, in seconds.
+  timeSpentSeconds Int      @default(0)
+
+  quizScore Int? // correct answers
+  quizTotal Int?
+
+  /// 0–100, computed by the scoring engine from quiz + observations + completion.
+  autoScore     Float?
+  /// Teacher's manual replacement for autoScore. Wins when present.
+  overrideScore Float?
+  teacherRemark String?
+  gradedAt      DateTime?
+  gradedById    String?
+
+  student  User  @relation("AttemptStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  gradedBy User? @relation("AttemptGrader", fields: [gradedById], references: [id], onDelete: SetNull)
+  lab      Lab   @relation(fields: [labId], references: [id], onDelete: Cascade)
+  class    Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  observations  Observation[]
+  quizResponses QuizResponse[]
+
+  @@unique([studentId, labId, classId])
+  @@index([classId, labId])
+  @@index([studentId])
+}
+
+model Observation {
+  id              String   @id @default(cuid())
+  attemptId       String
+  experimentTitle String
+  /// Key/value readings taken at the virtual bench.
+  readings        Json
+  notes           String   @default("")
+  createdAt       DateTime @default(now())
+
+  attempt LabAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+
+  @@index([attemptId])
+}
+
+model QuizResponse {
+  id            String   @id @default(cuid())
+  attemptId     String
+  questionId    String
+  selectedIndex Int
+  isCorrect     Boolean
+  answeredAt    DateTime @default(now())
+
+  attempt  LabAttempt   @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+}

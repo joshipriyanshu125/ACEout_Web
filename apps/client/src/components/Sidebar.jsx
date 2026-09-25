@@ -3,6 +3,7 @@ import { LabVRLogo } from "./LabVRLogo.jsx";
 export function Sidebar({ currentView, onNavigate, user, onOpenAuth, onSignOut }) {
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: "⌂" },
+    { id: "labs", label: "My Labs", icon: "🧪" },
     { id: "bench", label: "Virtual Bench", icon: "⚡", badge: "LIVE" },
     { id: "practice", label: "Practice Lab", icon: "◫" },
     { id: "quests", label: "Quests & XP", icon: "✦" },

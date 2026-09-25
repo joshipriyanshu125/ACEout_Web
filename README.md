@@ -1,159 +1,120 @@
-# Turborepo starter
+# ACEout — Virtual Lab System
 
-This Turborepo starter is maintained by the Turborepo core team.
+A virtual science lab where **teachers unlock experiments as the syllabus progresses** and
+**students run them on an interactive bench**. Work is auto-scored on submission and surfaced
+back to the teacher as a ranked list, with a full drill-down into any individual student.
 
-## Using this example
+## The flow
 
-Run the following command:
+1. A **teacher** owns one or more classes. Students join with a class code.
+2. The teacher **unlocks labs one at a time**, each with a due date. Locked labs are invisible
+   and unreachable to students — enforced server-side, not just hidden in the UI.
+3. A **student** opens an unlocked lab, takes readings on the virtual bench, and answers the
+   lab quiz. The quiz is graded on the server; the answer key never reaches the browser.
+4. On submission the attempt is **auto-scored out of 100**.
+5. The teacher sees a **ranked leaderboard** (overall, or per lab), and can open any student to
+   read their actual readings and quiz answers, then **override the mark** with a remark.
 
-```sh
-npx create-turbo@latest
+## Scoring
+
+| Component    | Weight | Basis                                            |
+| ------------ | -----: | ------------------------------------------------ |
+| Quiz         |     50 | fraction of quiz questions correct               |
+| Observations |     30 | readings logged vs. the lab's required count     |
+| Completion   |     20 | awarded once the attempt is submitted            |
+| Late penalty |    −10 | submitted after the due date                     |
+
+A teacher override replaces the auto-score entirely; the original stays visible for reference.
+Ties in the ranking break on labs completed, then on who submitted earlier.
+
+## Stack
+
+- **apps/client** — React 19 + Vite. One app, role-routed: teachers get the teacher portal,
+  students get the lab app.
+- **apps/backend** — Express + Prisma 6 + PostgreSQL. JWT auth with bcrypt-hashed passwords.
+
+## Setup
+
+Requires Node 20+ and a running PostgreSQL.
+
+```bash
+npm install
 ```
 
-## What's inside?
+Create the database and point the backend at it:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+```bash
+createdb aceout_lab
 ```
 
-Without global `turbo`, use your package manager:
+Copy `apps/backend/.env.example` to `apps/backend/.env` and set `DATABASE_URL`. On a local
+Postgres using peer auth over the unix socket, this works as-is:
 
-```sh
-cd my-turborepo
-npx turbo build
-npm exec turbo build
-npm exec turbo build
+```
+DATABASE_URL="postgresql://YOUR_USER@localhost/aceout_lab?host=/var/run/postgresql&schema=public"
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Run the migration and seed the demo data:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+```bash
+npm run db:migrate --workspace backend
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+```bash
+npm run db:seed --workspace backend
 ```
 
-### Develop
+Start both apps:
 
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+npm run dev
 ```
 
-Without global `turbo`, use your package manager:
+Client on http://localhost:5173, API on http://localhost:5000.
 
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+## Demo accounts
+
+| Role    | Email                  | Password     |
+| ------- | ---------------------- | ------------ |
+| Teacher | `teacher@aceout.dev`   | `teacher123` |
+| Student | `student1@aceout.dev`  | `student123` |
+
+`student1` … `student8` all exist with the same password, with deliberately varied performance
+so the rankings are populated on first load. Join codes: `PHY10A`, `PHY10B`.
+
+The seed unlocks 3 of 6 labs for Class 10-A — two past their due date (ready to review) and one
+still open — leaving 3 locked so you can demo unlocking live.
+
+To reset back to that state at any point:
+
+```bash
+npm run db:reset --workspace backend
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Data model
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+`User` (role: STUDENT/TEACHER/ADMIN) · `Class` · `Enrollment` · `Lab` · `QuizQuestion` ·
+`LabUnlock` (class × lab, with `dueAt`) · `LabAttempt` (student × lab × class, holds the scores) ·
+`Observation` · `QuizResponse`.
 
-```sh
-turbo dev --filter=web
-```
+Locking a lab sets `closedAt` rather than deleting the row, so submitted work and unlock history
+survive a re-lock.
 
-Without global `turbo`:
+## API
 
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
-```
+| Method | Route | Purpose |
+| --- | --- | --- |
+| POST | `/api/auth/register` · `/api/auth/login` | Auth, returns JWT |
+| GET | `/api/auth/me` | Current user |
+| GET/POST | `/api/teacher/classes` | List / create classes |
+| GET | `/api/teacher/classes/:id/labs` | All labs + unlock state + progress |
+| POST/DELETE | `/api/teacher/classes/:id/labs/:labId/unlock` | Unlock / lock a lab |
+| GET | `/api/teacher/classes/:id/rankings?labId=` | Ranked list, overall or per lab |
+| GET | `/api/teacher/classes/:id/students/:studentId` | Full student report |
+| PATCH | `/api/teacher/attempts/:id/grade` | Override score + remark |
+| GET | `/api/student/labs` | **Only** labs unlocked for the student's class |
+| POST | `/api/student/labs/:labId/start` · `/observations` · `/quiz` · `/submit` | Attempt lifecycle |
+| GET | `/api/student/results` | The student's own marks and remarks |
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Teacher routes require the `TEACHER` role; student routes require `STUDENT`. A student calling a
+teacher route gets 403, and a locked lab returns 403 on every student endpoint.
