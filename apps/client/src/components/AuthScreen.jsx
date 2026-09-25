@@ -3,8 +3,8 @@ import { auth, setToken } from "../services/api.js";
 import { LabVRLogo } from "./LabVRLogo.jsx";
 
 const DEMO_ACCOUNTS = [
-  { label: "Demo teacher", email: "teacher@aceout.dev", password: "teacher123" },
-  { label: "Demo student", email: "student1@aceout.dev", password: "student123" },
+  { label: "👩‍🏫 Demo Teacher", email: "teacher@aceout.dev", password: "teacher123", roleBadge: "Teacher" },
+  { label: "🎓 Demo Student", email: "student1@aceout.dev", password: "student123", roleBadge: "Student" },
 ];
 
 export function AuthScreen({ onAuthenticated }) {
@@ -63,116 +63,225 @@ export function AuthScreen({ onAuthenticated }) {
   return (
     <div className="auth-screen">
       <div className="auth-panel">
-        <div className="auth-brand">
-          <LabVRLogo />
-        </div>
+        <div className="auth-panel-card">
+          <div className="auth-brand">
+            <LabVRLogo size={42} />
+          </div>
 
-        <h1>{mode === "sign-in" ? "Welcome back" : "Create your account"}</h1>
-        <p className="auth-sub">
-          {mode === "sign-in"
-            ? "Sign in to reach your virtual lab bench."
-            : "Teachers manage classes and labs. Students run experiments."}
-        </p>
+          <div className="auth-heading-group">
+            <h1>{mode === "sign-in" ? "Welcome back" : "Create your account"}</h1>
+            <p className="auth-sub">
+              {mode === "sign-in"
+                ? "Sign in to access your interactive 3D laboratory bench."
+                : "Teachers manage classes & unlocks. Students run experiments in real time."}
+            </p>
+          </div>
 
-        <form onSubmit={submit} className="auth-form">
-          {mode === "sign-up" && (
-            <>
-              <label>
-                Full name
-                <input value={form.name} onChange={set("name")} required placeholder="Aanya Kapoor" />
-              </label>
+          <form onSubmit={submit} className="auth-form">
+            {mode === "sign-up" && (
+              <>
+                <label>
+                  <span>Full Name</span>
+                  <input
+                    value={form.name}
+                    onChange={set("name")}
+                    required
+                    placeholder="e.g. Piyush Joshi"
+                    autoComplete="name"
+                  />
+                </label>
 
-              <div className="role-toggle">
-                {["STUDENT", "TEACHER"].map((role) => (
-                  <button
-                    type="button"
-                    key={role}
-                    className={form.role === role ? "active" : ""}
-                    onClick={() => setForm((f) => ({ ...f, role }))}
-                  >
-                    {role === "STUDENT" ? "🎓 Student" : "👩‍🏫 Teacher"}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+                <div className="role-selector-wrap">
+                  <span className="field-label">Account Role</span>
+                  <div className="role-toggle">
+                    {["STUDENT", "TEACHER"].map((role) => (
+                      <button
+                        type="button"
+                        key={role}
+                        className={form.role === role ? "active" : ""}
+                        onClick={() => setForm((f) => ({ ...f, role }))}
+                      >
+                        <span className="role-icon">{role === "STUDENT" ? "🎓" : "👩‍🏫"}</span>
+                        <span className="role-name">{role === "STUDENT" ? "Student" : "Teacher"}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
-          <label>
-            Email
-            <input
-              type="email"
-              value={form.email}
-              onChange={set("email")}
-              required
-              placeholder="you@school.edu"
-            />
-          </label>
-
-          <label>
-            Password
-            <input
-              type="password"
-              value={form.password}
-              onChange={set("password")}
-              required
-              minLength={6}
-              placeholder="At least 6 characters"
-            />
-          </label>
-
-          {mode === "sign-up" && form.role === "STUDENT" && (
             <label>
-              Class join code <small>(optional)</small>
+              <span>Email Address</span>
               <input
-                value={form.joinCode}
-                onChange={set("joinCode")}
-                placeholder="e.g. PHY10A"
-                style={{ textTransform: "uppercase" }}
+                type="email"
+                value={form.email}
+                onChange={set("email")}
+                required
+                placeholder="you@school.edu"
+                autoComplete="email"
               />
             </label>
-          )}
 
-          {error && <p className="auth-error">⚠ {error}</p>}
+            <label>
+              <span>Password</span>
+              <input
+                type="password"
+                value={form.password}
+                onChange={set("password")}
+                required
+                minLength={6}
+                placeholder="••••••••••••"
+                autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
+              />
+            </label>
 
-          <button className="primary-action auth-submit" disabled={busy}>
-            {busy ? "Please wait…" : mode === "sign-in" ? "Sign in" : "Create account"}
-          </button>
-        </form>
+            {mode === "sign-up" && form.role === "STUDENT" && (
+              <label>
+                <span>Class Join Code <small>(optional)</small></span>
+                <input
+                  value={form.joinCode}
+                  onChange={set("joinCode")}
+                  placeholder="e.g. PHY10A"
+                  style={{ textTransform: "uppercase" }}
+                />
+              </label>
+            )}
 
-        <p className="auth-switch">
-          {mode === "sign-in" ? "New to ACEout?" : "Already have an account?"}{" "}
-          <button
-            type="button"
-            onClick={() => {
-              setMode(mode === "sign-in" ? "sign-up" : "sign-in");
-              setError("");
-            }}
-          >
-            {mode === "sign-in" ? "Create an account" : "Sign in"}
-          </button>
-        </p>
+            {error && (
+              <div className="auth-error">
+                <span className="error-icon">⚠</span>
+                <span>{error}</span>
+              </div>
+            )}
 
-        <div className="demo-accounts">
-          <span>Quick demo login</span>
-          <div>
-            {DEMO_ACCOUNTS.map((a) => (
-              <button key={a.email} type="button" onClick={() => useDemo(a)} disabled={busy}>
-                {a.label}
-              </button>
-            ))}
+            <button className="primary-action auth-submit" disabled={busy}>
+              {busy ? (
+                <span className="btn-loading">
+                  <span className="spinner-dot"></span> Processing…
+                </span>
+              ) : mode === "sign-in" ? (
+                "Sign in to LabVR →"
+              ) : (
+                "Create Account →"
+              )}
+            </button>
+          </form>
+
+          <p className="auth-switch">
+            {mode === "sign-in" ? "New to LabVR?" : "Already have an account?"}{" "}
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === "sign-in" ? "sign-up" : "sign-in");
+                setError("");
+              }}
+            >
+              {mode === "sign-in" ? "Create an account" : "Sign in"}
+            </button>
+          </p>
+
+          <div className="demo-accounts">
+            <div className="demo-header">
+              <span className="sparkle">✦</span>
+              <span>1-CLICK DEMO ACCESS</span>
+            </div>
+            <div className="demo-pills">
+              {DEMO_ACCOUNTS.map((a) => (
+                <button
+                  key={a.email}
+                  type="button"
+                  onClick={() => useDemo(a)}
+                  disabled={busy}
+                  className="demo-pill-btn"
+                >
+                  {a.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="auth-aside" aria-hidden="true">
+        <div className="auth-aside-backdrop">
+          <div className="orb orb-1"></div>
+          <div className="orb orb-2"></div>
+          <div className="orb orb-3"></div>
+          <div className="grid-overlay"></div>
+        </div>
+
         <div className="auth-aside-inner">
-          <p className="eyebrow light">ACEOUT VIRTUAL LAB</p>
+          <div className="badge-pill">
+            <span className="pulse-dot"></span>
+            <span>NEXT-GEN STEM PRACTICALS</span>
+          </div>
+
           <h2>Run real practicals, without the lab.</h2>
-          <ul>
-            <li>✦ Teachers unlock experiments as the syllabus progresses</li>
-            <li>✦ Students take readings on an interactive bench</li>
-            <li>✦ Work is auto-scored and ranked the moment it&apos;s submitted</li>
-          </ul>
+          <p className="hero-lead">
+            Interactive 3D simulation benches, zero calibration error, and instant auto-scoring designed for CBSE and state curriculums.
+          </p>
+
+          {/* Floating UI Showcase Cards */}
+          <div className="hero-feature-cards">
+            <div className="hero-card">
+              <div className="hero-card-header">
+                <span className="hero-card-icon emerald">🧪</span>
+                <div>
+                  <h4>Interactive 3D Benches</h4>
+                  <p>Pendulum, Vernier Caliper, Sound Resonance & Optics</p>
+                </div>
+              </div>
+              <div className="hero-card-metric">
+                <span className="val">100%</span>
+                <span className="lbl">Hardware accuracy</span>
+              </div>
+            </div>
+
+            <div className="hero-card amber-tint">
+              <div className="hero-card-header">
+                <span className="hero-card-icon amber">⚡</span>
+                <div>
+                  <h4>Real-Time Auto Scoring</h4>
+                  <p>Instant precision ranking based on recorded observations</p>
+                </div>
+              </div>
+              <div className="hero-card-metric">
+                <span className="val">0.01s</span>
+                <span className="lbl">Feedback loop</span>
+              </div>
+            </div>
+
+            <div className="hero-card teal-tint">
+              <div className="hero-card-header">
+                <span className="hero-card-icon teal">👩‍🏫</span>
+                <div>
+                  <h4>Teacher Syllabus Control</h4>
+                  <p>Lock/unlock practical experiments per class section</p>
+                </div>
+              </div>
+              <div className="hero-card-metric">
+                <span className="val">Class 9–12</span>
+                <span className="lbl">Curriculum ready</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="hero-footer-stats">
+            <div className="stat-item">
+              <span className="stat-num">6+</span>
+              <span className="stat-name">Active Benches</span>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <span className="stat-num">18+</span>
+              <span className="stat-name">Calibrated Quests</span>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <span className="stat-num">99.8%</span>
+              <span className="stat-name">Uptime</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -7,19 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  STUDENT
-  TEACHER
-  ADMIN
-}
-
-enum AttemptStatus {
-  IN_PROGRESS
-  SUBMITTED
 }
 
 model User {
@@ -27,7 +16,7 @@ model User {
   name         String
   email        String  @unique
   passwordHash String
-  role         Role    @default(STUDENT)
+  role         String  @default("STUDENT") // STUDENT | TEACHER | ADMIN
   grade        String?
   board        String?
 
@@ -93,7 +82,7 @@ model Lab {
   difficulty      String
   description     String
   benchType       String // pendulum | sound | caliper — drives the VirtualBench sim
-  tags            String[]
+  tags            Json     @default("[]")
   orderIndex      Int      @default(0)
   isReady         Boolean  @default(true)
 
@@ -118,7 +107,7 @@ model QuizQuestion {
   instrumentType  String
   displayValue    String
   leastCount      String
-  options         String[]
+  options         Json     @default("[]")
   correctIndex    Int
   hintTitle       String
   hintDescription String
@@ -159,11 +148,11 @@ model LabAttempt {
   labId     String
   classId   String
 
-  status      AttemptStatus @default(IN_PROGRESS)
-  startedAt   DateTime      @default(now())
+  status      String   @default("IN_PROGRESS") // IN_PROGRESS | SUBMITTED
+  startedAt   DateTime @default(now())
   submittedAt DateTime?
   /// Accumulated active time on the bench, in seconds.
-  timeSpentSeconds Int      @default(0)
+  timeSpentSeconds Int @default(0)
 
   quizScore Int? // correct answers
   quizTotal Int?
