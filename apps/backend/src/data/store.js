@@ -200,3 +200,140 @@ export const quizQuestions = [
     explanation: "Least Count (LC) = 1 MSD - 1 VSD = 1 mm - 0.9 mm = 0.1 mm (or 0.01 cm).",
   },
 ];
+
+// ─── Administrator Portal Data ───────────────────────────────────────────────
+
+export const institutions = [
+  {
+    id: "inst-1",
+    name: "Delhi Public School – R.K. Puram",
+    board: "CBSE",
+    academicYear: "2026-27",
+    address: "Sector 10, R.K. Puram, New Delhi – 110022",
+    principalName: "Dr. Sunita Sharma",
+    phone: "+91-11-26196851",
+    email: "admin@dps-rkp.in",
+    logo: null,
+    totalClasses: 12,
+    totalSections: 32,
+    createdAt: "2026-04-01T00:00:00.000Z",
+  },
+];
+
+export const adminUsers = [
+  {
+    id: "admin-1",
+    institutionId: "inst-1",
+    name: "Dr. Sunita Sharma",
+    email: "admin@dps-rkp.in",
+    role: "admin",
+    password: "admin123", // plain-text for demo only
+    createdAt: "2026-04-01T00:00:00.000Z",
+  },
+];
+
+export const teachers = [
+  {
+    id: "teacher-1",
+    institutionId: "inst-1",
+    name: "Mrs. Priya Rao",
+    email: "priya.rao@dps-rkp.in",
+    subject: "Physics",
+    status: "active",
+    assignedClasses: [
+      { classLabel: "10", section: "B", subject: "Physics" },
+      { classLabel: "10", section: "C", subject: "Physics" },
+    ],
+    joinedAt: "2026-04-05T00:00:00.000Z",
+  },
+  {
+    id: "teacher-2",
+    institutionId: "inst-1",
+    name: "Mr. Arjun Mehta",
+    email: "arjun.mehta@dps-rkp.in",
+    subject: "Chemistry",
+    status: "active",
+    assignedClasses: [
+      { classLabel: "11", section: "A", subject: "Chemistry" },
+      { classLabel: "11", section: "B", subject: "Chemistry" },
+    ],
+    joinedAt: "2026-04-06T00:00:00.000Z",
+  },
+  {
+    id: "teacher-3",
+    institutionId: "inst-1",
+    name: "Ms. Kavitha Nair",
+    email: "kavitha.nair@dps-rkp.in",
+    subject: "Biology",
+    status: "inactive",
+    assignedClasses: [
+      { classLabel: "9", section: "A", subject: "Biology" },
+    ],
+    joinedAt: "2026-04-10T00:00:00.000Z",
+  },
+];
+
+export const classSections = [
+  { id: "cls-1", institutionId: "inst-1", classLabel: "9", section: "A", board: "CBSE", studentCount: 38, teacherId: "teacher-3", subject: "Biology", syllabusProgress: 62 },
+  { id: "cls-2", institutionId: "inst-1", classLabel: "10", section: "A", board: "CBSE", studentCount: 40, teacherId: null, subject: "Physics", syllabusProgress: 78 },
+  { id: "cls-3", institutionId: "inst-1", classLabel: "10", section: "B", board: "CBSE", studentCount: 39, teacherId: "teacher-1", subject: "Physics", syllabusProgress: 85 },
+  { id: "cls-4", institutionId: "inst-1", classLabel: "10", section: "C", board: "CBSE", studentCount: 41, teacherId: "teacher-1", subject: "Physics", syllabusProgress: 71 },
+  { id: "cls-5", institutionId: "inst-1", classLabel: "11", section: "A", board: "CBSE", studentCount: 35, teacherId: "teacher-2", subject: "Chemistry", syllabusProgress: 55 },
+  { id: "cls-6", institutionId: "inst-1", classLabel: "11", section: "B", board: "CBSE", studentCount: 37, teacherId: "teacher-2", subject: "Chemistry", syllabusProgress: 48 },
+];
+
+export const students = [
+  { id: "stu-1", institutionId: "inst-1", classId: "cls-3", name: "Aanya Kapoor", rollNumber: "01", email: "aanya@student.dps.in", xp: 420, streak: 7, completedLabs: 5, labsAssigned: 6, status: "active" },
+  { id: "stu-2", institutionId: "inst-1", classId: "cls-3", name: "Rohan Singh", rollNumber: "02", email: "rohan@student.dps.in", xp: 310, streak: 4, completedLabs: 4, labsAssigned: 6, status: "active" },
+  { id: "stu-3", institutionId: "inst-1", classId: "cls-3", name: "Nisha Patel", rollNumber: "03", email: "nisha@student.dps.in", xp: 180, streak: 2, completedLabs: 2, labsAssigned: 6, status: "active" },
+  { id: "stu-4", institutionId: "inst-1", classId: "cls-4", name: "Dev Sharma", rollNumber: "01", email: "dev@student.dps.in", xp: 520, streak: 10, completedLabs: 6, labsAssigned: 6, status: "active" },
+  { id: "stu-5", institutionId: "inst-1", classId: "cls-4", name: "Prerna Joshi", rollNumber: "02", email: "prerna@student.dps.in", xp: 90, streak: 1, completedLabs: 1, labsAssigned: 6, status: "at-risk" },
+  { id: "stu-6", institutionId: "inst-1", classId: "cls-5", name: "Karan Malhotra", rollNumber: "01", email: "karan@student.dps.in", xp: 250, streak: 5, completedLabs: 3, labsAssigned: 5, status: "active" },
+];
+
+export const subscriptionPlans = [
+  { id: "plan-starter", name: "Starter", price: 12000, seats: 100, features: ["Up to 100 students", "3 Teacher accounts", "CBSE Physics labs", "Email support"] },
+  { id: "plan-school", name: "School", price: 35000, seats: 500, features: ["Up to 500 students", "15 Teacher accounts", "All subject labs", "Priority support", "Analytics dashboard"] },
+  { id: "plan-enterprise", name: "Enterprise", price: 80000, seats: 2000, features: ["Unlimited students", "Unlimited teachers", "All labs + custom labs", "Dedicated CSM", "Advanced analytics", "CSV bulk import"] },
+];
+
+export const institutionSubscriptions = [
+  {
+    id: "sub-1",
+    institutionId: "inst-1",
+    planId: "plan-school",
+    seatsUsed: 193,
+    seatsTotal: 500,
+    startDate: "2026-04-01",
+    renewalDate: "2027-03-31",
+    status: "active",
+    invoices: [
+      { id: "inv-001", date: "2026-04-01", amount: 35000, status: "paid", description: "Annual subscription – School Plan" },
+      { id: "inv-002", date: "2026-07-01", amount: 5000, status: "paid", description: "Add-on seats (50 extra)" },
+    ],
+  },
+];
+
+export const curricula = [
+  {
+    id: "cur-cbse-10",
+    board: "CBSE",
+    classLabel: "10",
+    subject: "Physics",
+    labs: [
+      { labId: "pendulum-1", title: "Simple Pendulum", unit: "Motion", mandatory: true },
+      { labId: "sound-1", title: "Sound Waves", unit: "Sound", mandatory: true },
+      { labId: "caliper-1", title: "Vernier Caliper", unit: "Measurement", mandatory: false },
+    ],
+  },
+  {
+    id: "cur-cbse-11",
+    board: "CBSE",
+    classLabel: "11",
+    subject: "Chemistry",
+    labs: [
+      { labId: "titration-1", title: "Acid-Base Titration", unit: "Acids & Bases", mandatory: true },
+      { labId: "chromatography-1", title: "Paper Chromatography", unit: "Separation", mandatory: false },
+    ],
+  },
+];

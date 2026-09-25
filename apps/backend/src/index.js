@@ -7,6 +7,7 @@ import { experimentsRouter } from "./routes/experiments.routes.js";
 import { questsRouter } from "./routes/quests.routes.js";
 import { observationsRouter } from "./routes/observations.routes.js";
 import { quizzesRouter } from "./routes/quizzes.routes.js";
+import { adminRouter } from "./routes/admin.routes.js";
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middlewares
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"],
+  origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:3000", "http://127.0.0.1:5173", "http://127.0.0.1:5174"],
   credentials: true,
 }));
 app.use(express.json());
@@ -42,6 +43,7 @@ app.use("/api/experiments", experimentsRouter);
 app.use("/api/quests", questsRouter);
 app.use("/api/observations", observationsRouter);
 app.use("/api/quizzes", quizzesRouter);
+app.use("/api/admin", adminRouter);
 
 // 404 handler
 app.use((_req, res) => {
