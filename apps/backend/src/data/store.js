@@ -285,10 +285,12 @@ export const classSections = [
 export const students = [
   { id: "stu-1", institutionId: "inst-1", classId: "cls-3", name: "Aanya Kapoor", rollNumber: "01", email: "aanya@student.dps.in", xp: 420, streak: 7, completedLabs: 5, labsAssigned: 6, status: "active" },
   { id: "stu-2", institutionId: "inst-1", classId: "cls-3", name: "Rohan Singh", rollNumber: "02", email: "rohan@student.dps.in", xp: 310, streak: 4, completedLabs: 4, labsAssigned: 6, status: "active" },
-  { id: "stu-3", institutionId: "inst-1", classId: "cls-3", name: "Nisha Patel", rollNumber: "03", email: "nisha@student.dps.in", xp: 180, streak: 2, completedLabs: 2, labsAssigned: 6, status: "active" },
+  { id: "stu-3", institutionId: "inst-1", classId: "cls-3", name: "Nisha Patel", rollNumber: "03", email: "nisha@student.dps.in", xp: 280, streak: 4, completedLabs: 4, labsAssigned: 6, status: "active" },
   { id: "stu-4", institutionId: "inst-1", classId: "cls-4", name: "Dev Sharma", rollNumber: "01", email: "dev@student.dps.in", xp: 520, streak: 10, completedLabs: 6, labsAssigned: 6, status: "active" },
-  { id: "stu-5", institutionId: "inst-1", classId: "cls-4", name: "Prerna Joshi", rollNumber: "02", email: "prerna@student.dps.in", xp: 90, streak: 1, completedLabs: 1, labsAssigned: 6, status: "at-risk" },
-  { id: "stu-6", institutionId: "inst-1", classId: "cls-5", name: "Karan Malhotra", rollNumber: "01", email: "karan@student.dps.in", xp: 250, streak: 5, completedLabs: 3, labsAssigned: 5, status: "active" },
+  { id: "stu-5", institutionId: "inst-1", classId: "cls-4", name: "Pooja Joshi", rollNumber: "02", email: "pooja.j@student.dps.in", xp: 360, streak: 5, completedLabs: 4, labsAssigned: 6, status: "active" },
+  { id: "stu-6", institutionId: "inst-1", classId: "cls-5", name: "Karan Malhotra", rollNumber: "01", email: "karan@student.dps.in", xp: 290, streak: 5, completedLabs: 4, labsAssigned: 5, status: "active" },
+  { id: "stu-7", institutionId: "inst-1", classId: "cls-5", name: "Ananya Roy", rollNumber: "02", email: "ananya.roy@student.dps.in", xp: 380, streak: 4, completedLabs: 4, labsAssigned: 5, status: "active" },
+  { id: "stu-8", institutionId: "inst-1", classId: "cls-6", name: "Varun Verma", rollNumber: "01", email: "varun.v@student.dps.in", xp: 410, streak: 5, completedLabs: 5, labsAssigned: 6, status: "active" },
 ];
 
 export const subscriptionPlans = [

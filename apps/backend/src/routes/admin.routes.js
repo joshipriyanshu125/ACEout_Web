@@ -95,12 +95,37 @@ adminRouter.delete("/teachers/:id", (req, res) => {
 adminRouter.post("/teachers/:id/assign", (req, res) => {
   const teacher = teachers.find((t) => t.id === req.params.id);
   if (!teacher) return res.status(404).json({ error: "Teacher not found" });
-  const { classLabel, section, subject } = req.body;
-  if (!classLabel || !section) return res.status(400).json({ error: "classLabel and section required" });
+  const { classLabel, section, classId, subject } = req.body;
+
+  let cls = null;
+  if (classId) cls = classSections.find((c) => c.id === classId);
+  else if (classLabel && section) cls = classSections.find((c) => c.classLabel === classLabel && c.section === section);
+
+  const cLabel = cls ? cls.classLabel : classLabel;
+  const cSec = cls ? cls.section : section;
+  const cSubj = subject || (cls ? cls.subject : teacher.subject);
+
+  if (!cLabel || !cSec) return res.status(400).json({ error: "classLabel and section or classId required" });
+
+  // Rule: Once a teacher is assigned, no further teacher can be assigned to that class for that subject
+  const existingTeacher = teachers.find(
+    (t) => t.id !== teacher.id && t.assignedClasses?.some((a) => a.classLabel === cLabel && a.section === cSec && (a.subject === cSubj || !a.subject))
+  ) || (cls && cls.teacherId && cls.teacherId !== teacher.id && cls.subject === cSubj ? teachers.find((t) => t.id === cls.teacherId) : null);
+
+  if (existingTeacher) {
+    return res.status(400).json({
+      error: `Class ${cLabel}-${cSec} is already assigned to ${existingTeacher.name} for ${cSubj}. No further teacher can be assigned for this subject. Please unassign ${existingTeacher.name} first.`,
+    });
+  }
+
   const exists = teacher.assignedClasses.some(
-    (a) => a.classLabel === classLabel && a.section === section
+    (a) => a.classLabel === cLabel && a.section === cSec
   );
-  if (!exists) teacher.assignedClasses.push({ classLabel, section, subject: subject || teacher.subject });
+  if (!exists) teacher.assignedClasses.push({ classLabel: cLabel, section: cSec, subject: cSubj });
+  if (cls) {
+    cls.teacherId = teacher.id;
+    cls.subject = cSubj;
+  }
   res.json({ success: true, teacher });
 });
 
@@ -121,10 +146,14 @@ adminRouter.get("/classes", (req, res) => {
   const result = institutionId
     ? classSections.filter((c) => c.institutionId === institutionId)
     : classSections;
-  // Enrich with teacher name
+  // Enrich with teacher name and standardized label
   const enriched = result.map((cls) => {
     const teacher = teachers.find((t) => t.id === cls.teacherId);
-    return { ...cls, teacherName: teacher ? teacher.name : null };
+    return {
+      ...cls,
+      teacherName: teacher ? teacher.name : null,
+      label: cls.label || `Class ${cls.classLabel}-${cls.section}`,
+    };
   });
   res.json({ success: true, classes: enriched });
 });
@@ -225,6 +254,27 @@ adminRouter.post("/students/bulk", (req, res) => {
   });
 
   res.json({ success: true, created: created.length, errors });
+});
+
+adminRouter.put("/students/:id", (req, res) => {
+  const student = students.find((s) => s.id === req.params.id);
+  if (!student) return res.status(404).json({ error: "Student not found" });
+  const { classId, name, rollNumber, rollNo, email, status } = req.body;
+
+  if (classId !== undefined && classId !== student.classId) {
+    const oldCls = classSections.find((c) => c.id === student.classId);
+    if (oldCls && oldCls.studentCount > 0) oldCls.studentCount -= 1;
+    const newCls = classSections.find((c) => c.id === classId);
+    if (newCls) newCls.studentCount += 1;
+    student.classId = classId;
+  }
+  if (name !== undefined) student.name = name;
+  if (rollNumber !== undefined) student.rollNumber = rollNumber;
+  if (rollNo !== undefined) student.rollNumber = rollNo;
+  if (email !== undefined) student.email = email;
+  if (status !== undefined) student.status = status;
+
+  res.json({ success: true, student });
 });
 
 adminRouter.delete("/students/:id", (req, res) => {

@@ -2,14 +2,11 @@ import { useEffect, useState } from "react";
 import { getInstitution, updateInstitution } from "../services/api.js";
 
 const BOARDS = [
-  "CBSE (Central Board of Secondary Education)",
-  "ICSE / ISC (CISCE)",
-  "State Board (Maharashtra)",
-  "State Board (Karnataka)",
-  "State Board (Tamil Nadu)",
-  "State Board (Delhi / DBSE)",
-  "International Baccalaureate (IB)",
-  "Cambridge (IGCSE)",
+  { id: "CBSE", label: "CBSE (Central Board of Secondary Education)" },
+  { id: "ICSE", label: "ICSE / ISC (CISCE)" },
+  { id: "State Board", label: "State Board (State Curriculum)" },
+  { id: "IB", label: "International Baccalaureate (IB)" },
+  { id: "Cambridge", label: "Cambridge International (IGCSE)" },
 ];
 
 const YEARS = ["2025-2026", "2026-2027", "2027-2028"];
@@ -31,8 +28,33 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
 
   const onChange = (field, val) => setForm((f) => ({ ...f, [field]: val }));
 
+  const handlePhoneChange = (e) => {
+    // Only allow digits and plus sign, max 13 chars
+    const cleaned = e.target.value.replace(/[^0-9+]/g, "").slice(0, 13);
+    onChange("phone", cleaned);
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
+    
+    // Validate email if present
+    if (form.email) {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(form.email)) {
+        onNotify("Please enter a valid administrative email address with a proper domain (e.g. principal@dpsrkpuram.edu.in).", "error");
+        return;
+      }
+    }
+
+    // Validate phone if present
+    if (form.phone) {
+      const digitsOnly = form.phone.replace(/\D/g, "");
+      if (digitsOnly.length < 10 || digitsOnly.length > 13) {
+        onNotify("Please enter a valid contact phone number (10–13 digits).", "error");
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       const data = await updateInstitution(instId, form);
@@ -46,7 +68,7 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
   };
 
   if (!form) {
-    return <div className="loading-page"><div className="spinner" /><span>Loading institution…</span></div>;
+    return <div className="loading-page"><div className="spinner" /><span>Loading institution settings…</span></div>;
   }
 
   return (
@@ -56,13 +78,13 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
         <p className="page-subtitle">Configure your school profile, board affiliation, academic year, and campus metadata.</p>
       </div>
 
-      <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
         {/* School Profile */}
         <div className="card">
           <div className="card-title"><span className="card-title-icon">🏫</span> General Institution Details</div>
-          <div className="form-grid" style={{ gap: 16 }}>
+          <div className="form-grid">
             <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-              <label className="form-label">School / Institution Legal Name</label>
+              <label className="form-label"><span>🏛️</span> School / Institution Legal Name</label>
               <input
                 className="form-input"
                 value={form.name || ""}
@@ -72,16 +94,16 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Institution Code / Affiliation No.</label>
+              <label className="form-label"><span>🔢</span> Institution Code / Affiliation No.</label>
               <input
                 className="form-input"
                 value={form.code || ""}
                 onChange={(e) => onChange("code", e.target.value)}
-                placeholder="e.g. CBSE-AFF-2730018"
+                placeholder="e.g. DPS-RKP-2026"
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Principal / Campus Head</label>
+              <label className="form-label"><span>👨‍🏫</span> Principal / Campus Head</label>
               <input
                 className="form-input"
                 value={form.principalName || ""}
@@ -90,7 +112,7 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Official Administrative Email</label>
+              <label className="form-label"><span>✉️</span> Official Administrative Email</label>
               <input
                 className="form-input"
                 type="email"
@@ -100,16 +122,18 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Official Contact Phone</label>
+              <label className="form-label"><span>📞</span> Official Contact Phone</label>
               <input
                 className="form-input"
+                type="tel"
                 value={form.phone || ""}
-                onChange={(e) => onChange("phone", e.target.value)}
-                placeholder="+91 11 2617 7087"
+                onChange={handlePhoneChange}
+                maxLength={13}
+                placeholder="+919810123456"
               />
             </div>
             <div className="form-group" style={{ gridColumn: "1 / -1" }}>
-              <label className="form-label">Campus Physical Address</label>
+              <label className="form-label"><span>📍</span> Campus Physical Address</label>
               <input
                 className="form-input"
                 value={form.address || ""}
@@ -123,23 +147,23 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
         {/* Board & Academic Config */}
         <div className="card">
           <div className="card-title"><span className="card-title-icon">📋</span> Academic & Board Configuration</div>
-          <div className="form-grid-3" style={{ gap: 16 }}>
-            <div className="form-group" style={{ gridColumn: "1 / 3" }}>
-              <label className="form-label">Primary Educational Board</label>
+          <div className="form-grid-3">
+            <div className="form-group" style={{ gridColumn: "1 / -1" }}>
+              <label className="form-label"><span>🎓</span> Primary Educational Board</label>
               <select
                 className="form-select"
                 value={form.board || "CBSE"}
-                onChange={(e) => onChange("board", e.target.value.split(" ")[0])}
+                onChange={(e) => onChange("board", e.target.value)}
               >
                 {BOARDS.map((b) => (
-                  <option key={b} value={b.split(" ")[0]}>
-                    {b}
+                  <option key={b.id} value={b.id}>
+                    {b.label}
                   </option>
                 ))}
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Active Academic Year</label>
+              <label className="form-label"><span>📅</span> Active Academic Year</label>
               <select
                 className="form-select"
                 value={form.academicYear || "2026-2027"}
@@ -151,18 +175,18 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
               </select>
             </div>
             <div className="form-group">
-              <label className="form-label">Number of Active Classes</label>
+              <label className="form-label"><span>🏫</span> Number of Active Classes</label>
               <input
                 className="form-input"
                 type="number"
                 min={1}
                 max={30}
-                value={form.classesCount || 14}
+                value={form.classesCount || form.totalClasses || 14}
                 onChange={(e) => onChange("classesCount", Number(e.target.value))}
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Sections Per Class</label>
+              <label className="form-label"><span>📚</span> Sections Per Class</label>
               <input
                 className="form-input"
                 type="number"
@@ -172,8 +196,8 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
                 onChange={(e) => onChange("sectionsPerClass", Number(e.target.value))}
               />
             </div>
-            <div className="form-group">
-              <label className="form-label">Estimated Student Headcount</label>
+            <div className="form-group" style={{ gridColumn: "1 / -1" }}>
+              <label className="form-label"><span>👥</span> Estimated Total Student Headcount</label>
               <input
                 className="form-input"
                 type="number"
@@ -188,11 +212,11 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
         <div
           className="card"
           style={{
-            background: "linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(99, 102, 241, 0.04) 100%)",
-            borderColor: "rgba(59, 130, 246, 0.2)",
+            background: "linear-gradient(135deg, rgba(16, 185, 129, 0.06) 0%, rgba(20, 184, 166, 0.03) 100%)",
+            borderColor: "rgba(16, 185, 129, 0.25)",
           }}
         >
-          <div className="card-title"><span className="card-title-icon">👁</span> Institutional Metadata Summary</div>
+          <div className="card-title"><span className="card-title-icon">👁</span> Institutional Metadata Live Preview</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 14 }}>
             {[
               { label: "Institution", value: form.name },
@@ -200,7 +224,7 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
               { label: "Board Affiliation", value: form.board },
               { label: "Academic Session", value: form.academicYear },
               { label: "Principal", value: form.principalName },
-              { label: "Contact", value: form.email },
+              { label: "Contact Email", value: form.email },
             ].map((r) => (
               <div key={r.label} className="info-row">
                 <span className="info-row-label">{r.label}</span>
@@ -210,15 +234,15 @@ export function InstitutionSetupPage({ session, institution, onInstitutionUpdate
           </div>
         </div>
 
-        <div className="form-actions">
+        <div className="form-actions" style={{ marginTop: 4 }}>
           <button
             type="submit"
             id="btn-save-institution"
             className="btn btn-primary"
             disabled={saving}
-            style={{ minWidth: 180, padding: "11px 22px" }}
+            style={{ minWidth: 200, padding: "12px 24px", fontSize: "14px" }}
           >
-            {saving ? <><span className="spinner" style={{ width: 14, height: 14 }} /> Saving…</> : "💾 Save Changes"}
+            {saving ? <><span className="spinner" style={{ width: 14, height: 14 }} /> Saving Changes…</> : "💾 Save Changes"}
           </button>
         </div>
       </form>

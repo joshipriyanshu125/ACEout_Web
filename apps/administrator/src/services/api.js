@@ -125,6 +125,12 @@ export const bulkImportStudents = async (data) => {
   });
 };
 
+export const updateStudent = async (id, data) => {
+  return tryRequest("PUT", `/students/${id}`, data, () => ({
+    student: mockDb.updateStudent(id, data),
+  }));
+};
+
 export const deleteStudent = async (id) => {
   return tryRequest("DELETE", `/students/${id}`, undefined, () => mockDb.deleteStudent(id));
 };

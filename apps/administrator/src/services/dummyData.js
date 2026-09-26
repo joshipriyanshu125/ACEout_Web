@@ -112,16 +112,16 @@ const INITIAL_TEACHERS = [
 const INITIAL_STUDENTS = [
   { id: "stu-1", name: "Aarav Sharma", rollNo: "10A01", classId: "cls-1", classLabel: "Class 10-A", email: "aarav.s@dpsrkp.in", xp: 1250, completedLabs: 8, totalLabs: 10, streak: 7, status: "Active", lastActive: "Today" },
   { id: "stu-2", name: "Diya Patel", rollNo: "10A02", classId: "cls-1", classLabel: "Class 10-A", email: "diya.p@dpsrkp.in", xp: 1420, completedLabs: 9, totalLabs: 10, streak: 12, status: "Active", lastActive: "Today" },
-  { id: "stu-3", name: "Ishaan Gupta", rollNo: "10A03", classId: "cls-1", classLabel: "Class 10-A", email: "ishaan.g@dpsrkp.in", xp: 450, completedLabs: 3, totalLabs: 10, streak: 0, status: "At Risk", lastActive: "4 days ago" },
-  { id: "stu-4", name: "Rhea Iyer", rollNo: "10A04", classId: "cls-1", classLabel: "Class 10-A", email: "rhea.i@dpsrkp.in", xp: 980, completedLabs: 7, totalLabs: 10, streak: 4, status: "Active", lastActive: "Yesterday" },
+  { id: "stu-3", name: "Ishaan Gupta", rollNo: "10A03", classId: "cls-1", classLabel: "Class 10-A", email: "ishaan.g@dpsrkp.in", xp: 850, completedLabs: 6, totalLabs: 10, streak: 4, status: "Active", lastActive: "Today" },
+  { id: "stu-4", name: "Rhea Iyer", rollNo: "10A04", classId: "cls-1", classLabel: "Class 10-A", email: "rhea.i@dpsrkp.in", xp: 980, completedLabs: 7, totalLabs: 10, streak: 5, status: "Active", lastActive: "Yesterday" },
   { id: "stu-5", name: "Kabir Mehta", rollNo: "10A05", classId: "cls-1", classLabel: "Class 10-A", email: "kabir.m@dpsrkp.in", xp: 1600, completedLabs: 10, totalLabs: 10, streak: 15, status: "Active", lastActive: "Today" },
-  { id: "stu-6", name: "Ananya Reddy", rollNo: "10B01", classId: "cls-2", classLabel: "Class 10-B", email: "ananya.r@dpsrkp.in", xp: 620, completedLabs: 4, totalLabs: 10, streak: 2, status: "Active", lastActive: "Yesterday" },
-  { id: "stu-7", name: "Rohan Nair", rollNo: "10B02", classId: "cls-2", classLabel: "Class 10-B", email: "rohan.n@dpsrkp.in", xp: 310, completedLabs: 2, totalLabs: 10, streak: 0, status: "At Risk", lastActive: "6 days ago" },
+  { id: "stu-6", name: "Ananya Reddy", rollNo: "10B01", classId: "cls-2", classLabel: "Class 10-B", email: "ananya.r@dpsrkp.in", xp: 780, completedLabs: 5, totalLabs: 10, streak: 4, status: "Active", lastActive: "Today" },
+  { id: "stu-7", name: "Rohan Nair", rollNo: "10B02", classId: "cls-2", classLabel: "Class 10-B", email: "rohan.n@dpsrkp.in", xp: 820, completedLabs: 6, totalLabs: 10, streak: 5, status: "Active", lastActive: "Today" },
   { id: "stu-8", name: "Meera Sen", rollNo: "10B03", classId: "cls-2", classLabel: "Class 10-B", email: "meera.s@dpsrkp.in", xp: 890, completedLabs: 6, totalLabs: 10, streak: 5, status: "Active", lastActive: "Today" },
   { id: "stu-9", name: "Aditya Joshi", rollNo: "10C01", classId: "cls-3", classLabel: "Class 10-C", email: "aditya.j@dpsrkp.in", xp: 1150, completedLabs: 9, totalLabs: 10, streak: 8, status: "Active", lastActive: "Today" },
   { id: "stu-10", name: "Tanvi Kapoor", rollNo: "10C02", classId: "cls-3", classLabel: "Class 10-C", email: "tanvi.k@dpsrkp.in", xp: 1050, completedLabs: 8, totalLabs: 10, streak: 6, status: "Active", lastActive: "Today" },
-  { id: "stu-11", name: "Dev Verma", rollNo: "10D01", classId: "cls-4", classLabel: "Class 10-D", email: "dev.v@dpsrkp.in", xp: 380, completedLabs: 3, totalLabs: 10, streak: 0, status: "At Risk", lastActive: "5 days ago" },
-  { id: "stu-12", name: "Sara Ali", rollNo: "10D02", classId: "cls-4", classLabel: "Class 10-D", email: "sara.a@dpsrkp.in", xp: 740, completedLabs: 5, totalLabs: 10, streak: 3, status: "Active", lastActive: "Yesterday" },
+  { id: "stu-11", name: "Dev Verma", rollNo: "10D01", classId: "cls-4", classLabel: "Class 10-D", email: "dev.v@dpsrkp.in", xp: 720, completedLabs: 5, totalLabs: 10, streak: 4, status: "Active", lastActive: "Today" },
+  { id: "stu-12", name: "Sara Ali", rollNo: "10D02", classId: "cls-4", classLabel: "Class 10-D", email: "sara.a@dpsrkp.in", xp: 840, completedLabs: 6, totalLabs: 10, streak: 5, status: "Active", lastActive: "Yesterday" },
   { id: "stu-13", name: "Varun Malhotra", rollNo: "11A01", classId: "cls-5", classLabel: "Class 11-A", email: "varun.m@dpsrkp.in", xp: 1350, completedLabs: 8, totalLabs: 12, streak: 9, status: "Active", lastActive: "Today" },
   { id: "stu-14", name: "Pooja Hegde", rollNo: "11B01", classId: "cls-6", classLabel: "Class 11-B", email: "pooja.h@dpsrkp.in", xp: 1100, completedLabs: 9, totalLabs: 12, streak: 7, status: "Active", lastActive: "Today" },
   { id: "stu-15", name: "Kunal Ghosh", rollNo: "12A01", classId: "cls-7", classLabel: "Class 12-A", email: "kunal.g@dpsrkp.in", xp: 1800, completedLabs: 14, totalLabs: 15, streak: 18, status: "Active", lastActive: "Today" },
@@ -284,6 +284,12 @@ export const mockDb = {
     const teacher = teachers.find((t) => t.id === teacherId);
 
     if (teacher && cls) {
+      if (cls.teacherId && cls.teacherId !== teacherId) {
+        const otherTeacher = teachers.find((t) => t.id === cls.teacherId);
+        const name = otherTeacher ? otherTeacher.name : cls.teacherName || "another teacher";
+        throw new Error(`Class ${cls.label} is already assigned to ${name} for ${cls.subject}. No further teacher can be assigned to this section.`);
+      }
+
       if (!teacher.classes.some((c) => c.classId === classId)) {
         teacher.classes.push({ classId: cls.id, label: cls.label, subject: subject || cls.subject });
       }
@@ -334,6 +340,23 @@ export const mockDb = {
     list.unshift(newStu);
     setStore("students", list);
     return newStu;
+  },
+  updateStudent(id, data) {
+    const list = this.getStudents();
+    const classes = this.getClasses();
+    const cls = data.classId ? classes.find((c) => c.id === data.classId) : null;
+    const updated = list.map((s) => {
+      if (s.id === id) {
+        return {
+          ...s,
+          ...data,
+          classLabel: cls ? cls.label : s.classLabel,
+        };
+      }
+      return s;
+    });
+    setStore("students", updated);
+    return updated.find((s) => s.id === id);
   },
   bulkImportStudents(studentsList, classId) {
     const existing = this.getStudents();

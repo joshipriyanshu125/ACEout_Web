@@ -9,22 +9,68 @@ const GRADES = ["Class 8", "Class 9", "Class 10", "Class 11", "Class 12"];
 const SECTIONS = ["A", "B", "C", "D"];
 
 function AddTeacherModal({ instId, onClose, onAdded }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [subject, setSubject] = useState(SUBJECTS[0]);
+  const [qualifications, setQualifications] = useState("");
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
+  const handlePhoneChange = (e) => {
+    // Only allow numbers and an optional leading +
+    const val = e.target.value;
+    const sanitized = val.replace(/[^0-9+]/g, "");
+    // Prevent multiple + symbols
+    const cleaned = sanitized.startsWith("+") ? "+" + sanitized.slice(1).replace(/\+/g, "") : sanitized.replace(/\+/g, "");
+    // Max 13 chars (e.g. +919876543210) or 10 digits
+    if (cleaned.length <= 13) {
+      setPhone(cleaned);
+      if (err.includes("phone") || err.includes("mobile")) setErr("");
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value.trim());
+    if (err.includes("email") || err.includes("Email")) setErr("");
+  };
+
+  const validateInputs = () => {
+    // 1. Email validation: valid syntax with legitimate domain & TLD (min 2 chars TLD)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRegex.test(email)) {
+      return "Please enter a valid official email address with a proper domain (e.g. teacher@dpsrkpuram.edu.in or name@school.org).";
+    }
+
+    // 2. Phone validation: if provided, must have 10-13 valid digits
+    if (phone) {
+      const digitsOnly = phone.replace(/\D/g, "");
+      if (digitsOnly.length < 10 || digitsOnly.length > 13) {
+        return "Please enter a valid 10-digit mobile number (e.g. 9810123456 or +919810123456).";
+      }
+    }
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
     setErr("");
-    const fd = new FormData(e.target);
+
+    const validationError = validateInputs();
+    if (validationError) {
+      setErr(validationError);
+      return;
+    }
+
+    setSaving(true);
     try {
       const data = await createTeacher({
         institutionId: instId,
-        name: fd.get("name"),
-        email: fd.get("email"),
-        phone: fd.get("phone"),
-        subject: fd.get("subject"),
-        qualifications: fd.get("qualifications"),
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        subject,
+        qualifications: qualifications.trim(),
       });
       onAdded(data.teacher);
       onClose();
@@ -46,22 +92,47 @@ function AddTeacherModal({ instId, onClose, onAdded }) {
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div className="form-group">
             <label className="form-label">Full Name & Title</label>
-            <input name="name" className="form-input" placeholder="e.g. Mrs. Sunita Rao" required />
+            <input
+              name="name"
+              className="form-input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. Mrs. Sunita Rao"
+              required
+            />
           </div>
           <div className="form-grid">
             <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input name="email" type="email" className="form-input" placeholder="teacher@dpsrkpuram.edu.in" required />
+              <label className="form-label">Official Email Address</label>
+              <input
+                name="email"
+                type="email"
+                className="form-input"
+                value={email}
+                onChange={handleEmailChange}
+                placeholder="teacher@dpsrkpuram.edu.in"
+                required
+              />
+              <span style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>Must be a valid school or institutional email</span>
             </div>
             <div className="form-group">
-              <label className="form-label">Phone Number</label>
-              <input name="phone" className="form-input" placeholder="+91 98101 XXXXX" />
+              <label className="form-label">Mobile Number</label>
+              <input
+                name="phone"
+                type="tel"
+                className="form-input"
+                value={phone}
+                onChange={handlePhoneChange}
+                maxLength={13}
+                placeholder="+91 98101 23456"
+              />
+              <span style={{ fontSize: "11px", color: "var(--ink-muted)", marginTop: "2px" }}>10 digits (max 13 with country code)</span>
             </div>
           </div>
           <div className="form-grid">
             <div className="form-group">
               <label className="form-label">Primary Subject</label>
-              <select name="subject" className="form-select">
+              <select name="subject" className="form-select" value={subject} onChange={(e) => setSubject(e.target.value)}>
                 {SUBJECTS.map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
@@ -69,7 +140,13 @@ function AddTeacherModal({ instId, onClose, onAdded }) {
             </div>
             <div className="form-group">
               <label className="form-label">Qualifications</label>
-              <input name="qualifications" className="form-input" placeholder="e.g. M.Sc. Physics, B.Ed." />
+              <input
+                name="qualifications"
+                className="form-input"
+                value={qualifications}
+                onChange={(e) => setQualifications(e.target.value)}
+                placeholder="e.g. M.Sc. Physics, B.Ed."
+              />
             </div>
           </div>
           <div className="form-actions">
@@ -128,22 +205,32 @@ function AssignModal({ teacher, classes, onClose, onDone, onNotify }) {
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
-        <div style={{ background: "rgba(59, 130, 246, 0.05)", padding: 14, borderRadius: 12, border: "1px solid rgba(59, 130, 246, 0.15)", marginBottom: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: "var(--clr-accent)", marginBottom: 10 }}>➕ Assign to a Section</div>
+        <div style={{ background: "rgba(16, 185, 129, 0.06)", padding: 16, borderRadius: 12, border: "1px solid rgba(16, 185, 129, 0.2)", marginBottom: 16 }}>
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: "#34d399", marginBottom: 6 }}>➕ Assign to a Class Section</div>
+          <div style={{ fontSize: 11.5, color: "var(--ink-muted)", marginBottom: 12 }}>
+            🔒 <em>Rule: Once a teacher is assigned to a section for a subject, no further teacher can be assigned to that section.</em>
+          </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <select
               className="form-select"
-              style={{ flex: 1, minWidth: 180 }}
+              style={{ flex: 1, minWidth: 220 }}
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
             >
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>{c.label} — {c.subject}</option>
-              ))}
+              {classes.map((c) => {
+                const label = c.label || `Class ${c.classLabel}-${c.section}`;
+                const isAssignedToOther = c.teacherId && c.teacherId !== teacher.id;
+                const isAssignedToThis = c.teacherId === teacher.id;
+                return (
+                  <option key={c.id} value={c.id} disabled={isAssignedToOther}>
+                    {label} — {c.subject} {isAssignedToThis ? "(Currently Assigned)" : isAssignedToOther ? `(🔒 Taken: ${c.teacherName})` : "(Available)"}
+                  </option>
+                );
+              })}
             </select>
             <select
               className="form-select"
-              style={{ width: 140 }}
+              style={{ width: 150 }}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             >
