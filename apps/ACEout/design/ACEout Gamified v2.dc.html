@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EEE8DC;font-family:'Plus Jakarta Sans',sans-serif;color:#1B1713;-webkit-font-smoothing:antialiased}
+a{color:#3257B0}a:hover{color:#1B1713}
+*{box-sizing:border-box}
+</style>
+</helmet>
+
+<section style="padding:56px 64px 80px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:10px;max-width:780px">
+    <div style="font-size:11px;font-weight:800;letter-spacing:.3em;text-transform:uppercase;color:#96662F">ACEout · v2 · playful path</div>
+    <div style="font-family:Fredoka,sans-serif;font-size:44px;font-weight:700;letter-spacing:-.01em;line-height:1.05">Every lab is a path of bite-size bench moves.</div>
+    <div style="font-size:15px;line-height:1.6;color:#4E473E;text-wrap:pretty">Each node is one procedure step. Read an instrument, answer, get instant feedback that teaches least count and error, and bank XP. Screen 02 is interactive: pick a reading and press Check.</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start">
+
+    <!-- 01 PATH -->
+    <div data-screen-label="01 Path" style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#6E675E">01 · Learn path</div>
+      <div style="width:390px;height:844px;border-radius:52px;border:10px solid #1B1713;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(74,60,40,.25)">
+        <div style="height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:14px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid #1B1713"></span></div>
+        <div style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 12px;border-bottom:2px solid #EFEAE0">
+          <div style="width:36px;height:30px;border-radius:9px;background:#4B7BE5;box-shadow:0 3px 0 #3257B0;color:#fff;font-family:Fredoka,sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center">Ph</div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#F07A2E"></span><span style="font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;color:#F07A2E">{{ streak }}</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="font-size:18px;color:#E8A83A">★</span><span style="font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;color:#C98A1E">1,240</span></div>
+          <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:16px;border-radius:3px;border:2.5px solid #E0543F;border-top-width:5px"></span><span style="font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;color:#E0543F">{{ energy }}</span></div>
+        </div>
+        <div style="flex:1;overflow:auto;scrollbar-width:none;padding:16px 16px 30px;display:flex;flex-direction:column;gap:24px">
+          <div style="border-radius:18px;background:#4B7BE5;box-shadow:0 4px 0 #3257B0;padding:16px 16px 16px 18px;color:#fff;display:flex;align-items:center;gap:12px">
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Class 11 · Unit 5</div>
+              <div style="font-family:Fredoka,sans-serif;font-size:20px;font-weight:600;line-height:1.15">Work, Energy and Power</div>
+            </div>
+            <div style="width:48px;height:48px;border-radius:14px;border:2px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-weight:700;font-size:13px">Notes</div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;align-items:center;gap:18px">
+            <div style="transform:translateX(0)"><div style="width:72px;height:66px;border-radius:50%;background:#E8A83A;box-shadow:0 7px 0 #B77E1E;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px">★</div></div>
+            <div style="transform:translateX(-46px)"><div style="width:72px;height:66px;border-radius:50%;background:#E8A83A;box-shadow:0 7px 0 #B77E1E;display:flex;align-items:center;justify-content:center;color:#fff;font-size:30px">★</div></div>
+            <div style="transform:translateX(-66px);position:relative;margin-top:44px">
+              <div style="position:absolute;left:50%;top:-50px;transform:translateX(-50%);white-space:nowrap;padding:9px 14px;border-radius:12px;background:#fff;border:2px solid #EFEAE0;color:#4B7BE5;font-family:Fredoka,sans-serif;font-size:15px;font-weight:700;letter-spacing:.04em">START</div>
+              <div style="width:96px;height:96px;border-radius:50%;background:conic-gradient(#4B7BE5 0 40%,#EFEAE0 40% 100%);display:flex;align-items:center;justify-content:center">
+                <div style="width:84px;height:84px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center">
+                  <div style="width:72px;height:66px;border-radius:50%;background:#4B7BE5;box-shadow:0 7px 0 #3257B0;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Fredoka,sans-serif;font-size:14px;font-weight:700">Time it</div>
+                </div>
+              </div>
+            </div>
+            <div style="transform:translateX(-40px)"><div style="width:72px;height:66px;border-radius:50%;background:#E5E1D8;box-shadow:0 7px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;color:#A39B8D;font-family:Fredoka,sans-serif;font-size:15px;font-weight:700">Plot</div></div>
+            <div style="transform:translateX(10px)"><div style="width:78px;height:64px;border-radius:16px;background:#E5E1D8;box-shadow:0 7px 0 #C8C1B3;display:flex;align-items:center;justify-content:center"><div style="width:44px;height:30px;border-radius:6px;border:3px solid #A39B8D;border-top-width:10px"></div></div></div>
+            <div style="transform:translateX(50px)"><div style="width:72px;height:66px;border-radius:50%;background:#E5E1D8;box-shadow:0 7px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;color:#A39B8D;font-family:Fredoka,sans-serif;font-size:18px;font-weight:700">μ</div></div>
+            <div style="transform:translateX(20px)"><div style="width:84px;height:76px;border-radius:50%;background:#E5E1D8;box-shadow:0 7px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;color:#A39B8D;font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;text-align:center;line-height:1.1">Faulty<br>bench</div></div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:12px;color:#A39B8D;font-size:13px;font-weight:700"><div style="flex:1;height:2px;background:#EFEAE0"></div>Unit 6 · Rotational motion<div style="flex:1;height:2px;background:#EFEAE0"></div></div>
+        </div>
+        <div style="flex-shrink:0;display:flex;justify-content:space-around;padding:10px 12px 26px;border-top:2px solid #EFEAE0;background:#fff">
+          <div style="width:52px;height:44px;border-radius:12px;border:2px solid #9DB8F2;background:#EAF0FD;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#3257B0">Learn</div>
+          <div style="width:52px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#A39B8D">Quests</div>
+          <div style="width:52px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#A39B8D">Search</div>
+          <div style="width:52px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#A39B8D">You</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 BENCH QUESTION (interactive) -->
+    <div data-screen-label="02 Read the scale" style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#6E675E">02 · Bench move · interactive</div>
+      <div style="width:390px;height:844px;border-radius:52px;border:10px solid #1B1713;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(74,60,40,.25);position:relative">
+        <div style="height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:14px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid #1B1713"></span></div>
+        <div style="flex-shrink:0;display:flex;align-items:center;gap:14px;padding:8px 20px 4px">
+          <div style="font-size:22px;color:#A39B8D;font-weight:700">×</div>
+          <div style="flex:1;height:16px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:{{ progressPct }};height:100%;border-radius:999px;background:#2FA87A;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)"></div></div>
+          <div style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:16px;border-radius:3px;border:2.5px solid #E0543F;border-top-width:5px"></span><span style="font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;color:#E0543F">{{ energyLive }}</span></div>
+        </div>
+        <div style="flex:1;padding:20px 20px 0;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#7B5BD6">Read the instrument</div>
+            <div style="font-family:Fredoka,sans-serif;font-size:24px;font-weight:600;line-height:1.2">Where does the block's front edge sit on the metre scale?</div>
+          </div>
+          <div style="border-radius:18px;border:2px solid #EFEAE0;background:#FBF7F0;padding:22px 16px 16px;display:flex;flex-direction:column;gap:6px">
+            <div style="position:relative;height:96px">
+              <div style="position:absolute;left:116px;top:0;width:96px;height:34px;border-radius:6px;background:#4B7BE5;box-shadow:0 4px 0 #3257B0"></div>
+              <div style="position:absolute;left:211px;top:-8px;height:80px;width:2px;background:#E0543F"></div>
+              <div style="position:absolute;left:0;right:0;top:38px;height:34px;border-radius:4px;background:#F3DDA8;border:1.5px solid #C98A1E"></div>
+              <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="31"><div style="{{ t.style }}"></div></sc-for>
+              <sc-for list="{{ tickLabels }}" as="l" hint-placeholder-count="4"><div style="{{ l.style }}">{{ l.text }}</div></sc-for>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+              <div onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="{{ footerStyle }}">
+          <sc-if value="{{ hasResult }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:{{ resultColor }}">{{ resultTitle }}</div>
+              <div style="font-size:13.5px;line-height:1.5;color:{{ resultColor }}">{{ resultBody }}</div>
+            </div>
+          </sc-if>
+          <div onClick="{{ onCheck }}" style="{{ checkStyle }}">{{ checkLabel }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 WRONG ANSWER STATE -->
+    <div data-screen-label="03 Feedback" style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#6E675E">03 · Feedback that teaches</div>
+      <div style="width:390px;height:844px;border-radius:52px;border:10px solid #1B1713;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(74,60,40,.25)">
+        <div style="height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:14px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid #1B1713"></span></div>
+        <div style="flex-shrink:0;display:flex;align-items:center;gap:14px;padding:8px 20px 4px">
+          <div style="font-size:22px;color:#A39B8D;font-weight:700">×</div>
+          <div style="flex:1;height:16px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:60%;height:100%;border-radius:999px;background:#2FA87A"></div></div>
+          <div style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:16px;border-radius:3px;border:2.5px solid #E0543F;border-top-width:5px"></span><span style="font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;color:#E0543F">4</span></div>
+        </div>
+        <div style="flex:1;padding:20px 20px 0;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#7B5BD6">Time the run</div>
+            <div style="font-family:Fredoka,sans-serif;font-size:24px;font-weight:600;line-height:1.2">How should you record this stopwatch reading?</div>
+          </div>
+          <div style="border-radius:18px;background:#1B1713;padding:22px;display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="font-family:Fredoka,sans-serif;font-size:46px;font-weight:600;color:#7CE0B4;letter-spacing:.04em;font-variant-numeric:tabular-nums">00:02.47</div>
+            <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6)">Least count 0.01 s</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="padding:18px 10px;border-radius:16px;border:2px solid #EFEAE0;box-shadow:0 4px 0 #EFEAE0;text-align:center;font-family:Fredoka,sans-serif;font-size:19px;font-weight:600">2.5 s</div>
+            <div style="padding:18px 10px;border-radius:16px;border:2px solid #EFEAE0;box-shadow:0 4px 0 #EFEAE0;text-align:center;font-family:Fredoka,sans-serif;font-size:19px;font-weight:600">2.47 s</div>
+            <div style="padding:18px 10px;border-radius:16px;border:2px solid #F2A194;background:#FDECE9;box-shadow:0 4px 0 #F2A194;text-align:center;font-family:Fredoka,sans-serif;font-size:19px;font-weight:600;color:#A83A2B">2.470 s</div>
+            <div style="padding:18px 10px;border-radius:16px;border:2px solid #EFEAE0;box-shadow:0 4px 0 #EFEAE0;text-align:center;font-family:Fredoka,sans-serif;font-size:19px;font-weight:600">2 s</div>
+          </div>
+        </div>
+        <div style="flex-shrink:0;padding:20px 20px 34px;background:#FDECE9;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#A83A2B">Too precise</div>
+            <div style="font-size:13.5px;line-height:1.5;color:#A83A2B">The watch only reads to 0.01 s. A third decimal claims precision you don't have. Correct: 2.47 s</div>
+          </div>
+          <div style="padding:16px;border-radius:16px;background:#E0543F;box-shadow:0 4px 0 #A83A2B;text-align:center;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;color:#fff">GOT IT</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 COMPLETE -->
+    <div data-screen-label="04 Complete" style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#6E675E">04 · Bench cleared</div>
+      <div style="width:390px;height:844px;border-radius:52px;border:10px solid #1B1713;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(74,60,40,.25);position:relative">
+        {{ confetti }}
+        <div style="height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:14px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid #1B1713"></span></div>
+        <div style="flex:1;padding:30px 22px 34px;display:flex;flex-direction:column;gap:22px;position:relative">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center">
+            <div style="width:170px;height:150px;border-radius:24px;border:2px dashed #D6CEBF;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#A39B8D;padding:14px">Mascot / celebration art</div>
+            <div style="display:flex;gap:4px;align-items:flex-end"><span style="font-size:44px;color:#E8A83A">★</span><span style="font-size:58px;color:#E8A83A">★</span><span style="font-size:44px;color:#E5E1D8">★</span></div>
+            <div style="font-family:Fredoka,sans-serif;font-size:32px;font-weight:700;color:#C98A1E">Bench cleared!</div>
+            <div style="font-size:14px;color:#6E675E;line-height:1.5;max-width:280px">Box on an inclined plane · Your μ landed within 7% of the bench.</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <div style="border-radius:16px;background:#E8A83A;padding:3px;display:flex;flex-direction:column"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-align:center;padding:5px 0">Total XP</div><div style="border-radius:13px;background:#fff;padding:12px 4px;text-align:center;font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#C98A1E">180</div></div>
+            <div style="border-radius:16px;background:#2FA87A;padding:3px;display:flex;flex-direction:column"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-align:center;padding:5px 0">Precision</div><div style="border-radius:13px;background:#fff;padding:12px 4px;text-align:center;font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#1F7A58">93%</div></div>
+            <div style="border-radius:16px;background:#E0543F;padding:3px;display:flex;flex-direction:column"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-align:center;padding:5px 0">Faults</div><div style="border-radius:13px;background:#fff;padding:12px 4px;text-align:center;font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#A83A2B">1/1</div></div>
+          </div>
+          <div style="padding:16px;border-radius:16px;background:#4B7BE5;box-shadow:0 4px 0 #3257B0;text-align:center;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;color:#fff">CLAIM XP</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 QUESTS -->
+    <div data-screen-label="05 Quests" style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#6E675E">05 · Quests</div>
+      <div style="width:390px;height:844px;border-radius:52px;border:10px solid #1B1713;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 60px rgba(74,60,40,.25)">
+        <div style="flex-shrink:0;background:#7B5BD6;color:#fff;padding:0 22px 22px;display:flex;flex-direction:column;gap:10px">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 6px;font-size:14px;font-weight:700"><span>9:41</span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid #fff"></span></div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.85">September challenge</div>
+          <div style="font-family:Fredoka,sans-serif;font-size:26px;font-weight:600;line-height:1.15">Catch 10 instrument faults</div>
+          <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:16px;border-radius:999px;background:rgba(0,0,0,.2);overflow:hidden"><div style="width:30%;height:100%;border-radius:999px;background:#F7C95C"></div></div><div style="font-family:Fredoka,sans-serif;font-weight:700">3/10</div></div>
+        </div>
+        <div style="flex:1;overflow:auto;scrollbar-width:none;padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-family:Fredoka,sans-serif;font-size:21px;font-weight:600">Daily quests</div><div style="font-size:12px;font-weight:800;color:#E8A83A">4 hours left</div></div>
+          <div style="border-radius:18px;border:2px solid #EFEAE0;padding:6px 16px">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:2px solid #EFEAE0">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="font-size:14px;font-weight:700">Earn 50 XP</div><div style="height:14px;border-radius:999px;background:#EFEAE0;overflow:hidden;position:relative"><div style="width:100%;height:100%;background:#E8A83A;border-radius:999px"></div></div></div>
+              <div onClick="{{ openChest }}" style="{{ chestStyle }}">{{ chestLabel }}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:2px solid #EFEAE0">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="font-size:14px;font-weight:700">Log 5 readings at least count</div><div style="height:14px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:60%;height:100%;background:#4B7BE5;border-radius:999px"></div></div></div>
+              <div style="width:52px;height:44px;border-radius:10px;background:#E5E1D8;box-shadow:0 4px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;color:#8A8274">3/5</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 0">
+              <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="font-size:14px;font-weight:700">Finish a bench with 3 stars</div><div style="height:14px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:0%;height:100%;background:#2FA87A"></div></div></div>
+              <div style="width:52px;height:44px;border-radius:10px;background:#E5E1D8;box-shadow:0 4px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;color:#8A8274">0/1</div>
+            </div>
+          </div>
+          <div style="font-family:Fredoka,sans-serif;font-size:21px;font-weight:600;margin-top:6px">Badges in reach</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;border:2px solid #EFEAE0">
+              <div style="width:52px;height:58px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#E0543F;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700">∥</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:14px;font-weight:800">Parallax hunter</div><div style="font-size:12.5px;color:#6E675E">Find the square-on sight line twice</div></div>
+              <div style="font-family:Fredoka,sans-serif;font-weight:700;color:#A39B8D">1/2</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:12px;border-radius:18px;border:2px solid #EFEAE0">
+              <div style="width:52px;height:58px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#7B5BD6;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700">11</div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:14px;font-weight:800">Eleven worlds</div><div style="font-size:12.5px;color:#6E675E">Launch the rover on every planet</div></div>
+              <div style="font-family:Fredoka,sans-serif;font-weight:700;color:#A39B8D">4/11</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex-shrink:0;display:flex;justify-content:space-around;padding:10px 12px 26px;border-top:2px solid #EFEAE0;background:#fff">
+          <div style="width:52px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#A39B8D">Learn</div>
+          <div style="width:52px;height:44px;border-radius:12px;border:2px solid #C3B2F0;background:#F1ECFC;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#5638A8">Quests</div>
+          <div style="width:52px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#A39B8D">Search</div>
+          <div style="width:52px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:12px;font-weight:700;color:#A39B8D">You</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;streak&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:0,&quot;max&quot;:365},&quot;energy&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:1,&quot;max&quot;:5},&quot;celebrate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { pick: null, checked: false, chest: false };
+  renderVals() {
+    const { pick, checked, chest } = this.state;
+    const CORRECT = '12.4 cm';
+    const labels = ['12.35 cm', '12.4 cm', '12 cm', '124 mm'];
+    const tile = { padding: '18px 10px', borderRadius: 16, border: '2px solid #EFEAE0', boxShadow: '0 4px 0 #EFEAE0', textAlign: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 19, fontWeight: 600, cursor: checked ? 'default' : 'pointer', background: '#fff' };
+    const ok = pick === CORRECT;
+    const options = labels.map(l => {
+      let s = tile;
+      if (pick === l && !checked) s = { ...tile, border: '2px solid #9DB8F2', background: '#EAF0FD', boxShadow: '0 4px 0 #9DB8F2', color: '#3257B0' };
+      if (checked && l === CORRECT) s = { ...tile, border: '2px solid #8FD9B8', background: '#E6F7EF', boxShadow: '0 4px 0 #8FD9B8', color: '#1F7A58' };
+      if (checked && pick === l && !ok) s = { ...tile, border: '2px solid #F2A194', background: '#FDECE9', boxShadow: '0 4px 0 #F2A194', color: '#A83A2B' };
+      return { label: l, style: s, pick: () => !checked && this.setState({ pick: l }) };
+    });
+    const btn = { padding: 16, borderRadius: 16, textAlign: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 17, fontWeight: 700, letterSpacing: '.06em', cursor: 'pointer' };
+    let checkStyle = pick ? { ...btn, background: '#2FA87A', boxShadow: '0 4px 0 #1F7A58', color: '#fff' } : { ...btn, background: '#E5E1D8', color: '#A39B8D', cursor: 'default' };
+    if (checked && !ok) checkStyle = { ...btn, background: '#E0543F', boxShadow: '0 4px 0 #A83A2B', color: '#fff' };
+    const bodies = {
+      '12.35 cm': 'The metre scale reads to 0.1 cm. A second decimal is a guess, not a reading.',
+      '12 cm': 'You rounded away a whole graduation. Read to the nearest 0.1 cm.',
+      '124 mm': 'Same length, but the bench wants cm to the least count. Record 12.4 cm.'
+    };
+    const energy = this.props.energy ?? 5;
+    let confetti = null;
+    if (this.props.celebrate ?? true) {
+      const cols = ['#E8A83A', '#4B7BE5', '#2FA87A', '#E0543F', '#7B5BD6'];
+      confetti = React.createElement('div', { style: { position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' } },
+        React.createElement('style', null, '@keyframes acefall2{0%{transform:translateY(-40px) rotate(0)}100%{transform:translateY(900px) rotate(540deg)}}'),
+        Array.from({ length: 26 }).map((_, i) => React.createElement('div', { key: i, style: {
+          position: 'absolute', left: ((i * 37) % 100) + '%', top: 0, width: i % 3 ? 8 : 11, height: i % 2 ? 13 : 8,
+          borderRadius: i % 4 === 0 ? '50%' : 2, background: cols[i % cols.length],
+          animation: `acefall2 ${3.2 + (i % 5) * .6}s linear ${-(i * .37)}s infinite` } })));
+    }
+    const chestBase = { width: 52, height: 44, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' };
+    const X0 = 20, MM = 8;
+    const ticks = Array.from({ length: 31 }, (_, i) => ({ style: { position: 'absolute', top: 39.5, left: X0 + i * MM, width: i % 10 === 0 ? 1.5 : 1, height: i % 10 === 0 ? 16 : i % 5 === 0 ? 11 : 7, background: '#6E4A20' } }));
+    const tickLabels = [10, 11, 12, 13].map((n, i) => ({ text: n === 13 ? '13 cm' : String(n), style: { position: 'absolute', top: 78, left: X0 + i * 80, transform: 'translateX(-50%)', fontSize: 11, fontWeight: 700, color: '#6E4A20', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' } }));
+    return {
+      ticks, tickLabels,
+      streak: this.props.streak ?? 6,
+      energy,
+      energyLive: checked && !ok ? energy - 1 : energy,
+      options,
+      progressPct: checked && ok ? '60%' : '40%',
+      hasResult: checked,
+      resultTitle: ok ? 'Clean reading!' : 'Not quite',
+      resultBody: ok ? 'Right to the least count, 0.1 cm. +10 XP' : bodies[pick] + ' Correct: 12.4 cm',
+      resultColor: ok ? '#1F7A58' : '#A83A2B',
+      footerStyle: { flexShrink: 0, padding: '20px 20px 34px', display: 'flex', flexDirection: 'column', gap: 14, background: checked ? (ok ? '#E6F7EF' : '#FDECE9') : '#fff', borderTop: checked ? 'none' : '2px solid #EFEAE0' },
+      checkLabel: checked ? (ok ? 'CONTINUE' : 'GOT IT') : 'CHECK',
+      checkStyle,
+      onCheck: () => { if (!pick) return; if (checked) this.setState({ pick: null, checked: false }); else this.setState({ checked: true }); },
+      confetti,
+      openChest: () => this.setState({ chest: !chest }),
+      chestLabel: chest ? '+20' : 'Open',
+      chestStyle: chest ? { ...chestBase, background: '#FDF3DD', color: '#C98A1E', border: '2px solid #F3D48F' } : { ...chestBase, background: '#E8A83A', boxShadow: '0 4px 0 #B77E1E', color: '#fff' },
+    };
+  }
+}
+</script>
+</body>
+</html>

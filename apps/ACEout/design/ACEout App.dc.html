@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EEE8DC;font-family:'Plus Jakarta Sans',sans-serif;color:#1B1713;-webkit-font-smoothing:antialiased}
+a{color:#3257B0}a:hover{color:#1B1713}
+*{box-sizing:border-box}
+input:focus{outline:none}
+</style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 16px">
+  <div data-screen-label="App" style="width:390px;height:844px;border-radius:52px;border:10px solid #1B1713;background:#FFFFFF;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 30px 60px rgba(74,60,40,.25)">
+
+    <div style="{{ statusStyle }}"><span>9:41</span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid currentColor"></span></div>
+
+    <div style="flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column">
+
+      <!-- SPLASH -->
+      <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Splash" style="flex:1;background:#4B7BE5;color:#fff;display:flex;flex-direction:column;padding:0 24px 40px">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center">
+            <div style="width:108px;height:108px;border-radius:30px;background:#fff;box-shadow:0 8px 0 #3257B0;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:58px;font-weight:700;color:#4B7BE5">A</div>
+            <div style="font-family:Fredoka,sans-serif;font-size:48px;font-weight:700;letter-spacing:-.01em;line-height:1">ACEout</div>
+            <div style="font-size:15px;font-weight:600;line-height:1.5;max-width:260px;opacity:.92">Real NCERT practicals on a 3D bench. Earn XP for every honest reading.</div>
+            <div style="display:flex;gap:8px;margin-top:6px">
+              <div style="padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.16);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Class 8–12</div>
+              <div style="padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.16);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase">Works offline</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div onClick="{{ startOnboarding }}" style="padding:17px;border-radius:16px;background:#fff;box-shadow:0 4px 0 #3257B0;text-align:center;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;color:#3257B0;cursor:pointer" style-active="transform:translateY(3px);box-shadow:0 1px 0 #3257B0">GET STARTED</div>
+            <div onClick="{{ skipToHome }}" style="padding:15px;border-radius:16px;border:2px solid rgba(255,255,255,.45);text-align:center;font-family:Fredoka,sans-serif;font-size:15px;font-weight:700;letter-spacing:.06em;cursor:pointer">I HAVE A PROFILE</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ONBOARDING -->
+      <sc-if value="{{ isOnb }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Onboarding" style="flex:1;display:flex;flex-direction:column;padding:6px 20px 34px;gap:22px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div onClick="{{ onbBack }}" style="font-size:22px;color:#A39B8D;font-weight:700;cursor:pointer;width:24px">←</div>
+            <div style="flex:1;height:16px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:{{ onbPct }};height:100%;border-radius:999px;background:#2FA87A;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12);transition:width .3s"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#7B5BD6">{{ onbEyebrow }}</div>
+            <div style="font-family:Fredoka,sans-serif;font-size:27px;font-weight:600;line-height:1.15">{{ onbTitle }}</div>
+          </div>
+          <div style="flex:1;overflow:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:12px">
+            <sc-if value="{{ isOnb0 }}" hint-placeholder-val="{{ false }}">
+              <input value="{{ nameDraft }}" onChange="{{ onName }}" placeholder="Your full name" maxLength="40" style="width:100%;padding:18px 16px;border-radius:16px;border:2px solid #EFEAE0;background:#FBF7F0;font-family:'Plus Jakarta Sans',sans-serif;font-size:17px;font-weight:600;color:#1B1713" style-focus="border-color:#9DB8F2">
+              <div style="font-size:13px;color:#6E675E;line-height:1.5">Stays on this phone. ACEout never goes online.</div>
+            </sc-if>
+            <sc-if value="{{ isOnb1 }}" hint-placeholder-val="{{ false }}">
+              <sc-for list="{{ classOpts }}" as="c" hint-placeholder-count="5">
+                <div onClick="{{ c.pick }}" style="{{ c.style }}">
+                  <div style="{{ c.numStyle }}">{{ c.num }}</div>
+                  <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:15px;font-weight:800">Class {{ c.num }}</div><div style="font-size:12.5px;color:#6E675E;line-height:1.4">{{ c.blurb }}</div></div>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ isOnb2 }}" hint-placeholder-val="{{ false }}">
+              <sc-for list="{{ boardOpts }}" as="b" hint-placeholder-count="3">
+                <div onClick="{{ b.pick }}" style="{{ b.style }}">{{ b.label }}</div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ isOnb3 }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding-top:8px">
+                <div style="width:150px;height:130px;border-radius:24px;border:2px dashed #D6CEBF;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#A39B8D;padding:12px">Welcome art</div>
+                <div style="padding:14px 22px;border-radius:16px;background:#FDF3DD;border:2px solid #F3D48F;font-family:Fredoka,sans-serif;font-size:24px;font-weight:700;color:#C98A1E;white-space:nowrap">+50 XP starter bonus</div>
+                <div style="font-size:14px;color:#6E675E;line-height:1.55;align-self:stretch">Class {{ clsPick }} · {{ boardPick }}. Your daily goal is 50 XP, about one bench.</div>
+              </div>
+            </sc-if>
+          </div>
+          <div onClick="{{ onbNext }}" style="{{ onbNextStyle }}">{{ onbNextLabel }}</div>
+        </div>
+      </sc-if>
+
+      <!-- HOME -->
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Home" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="flex-shrink:0;display:flex;align-items:center;gap:14px;padding:6px 20px 12px;border-bottom:2px solid #EFEAE0">
+            <div onClick="{{ goYou }}" style="width:38px;height:38px;border-radius:50%;background:#C79F6E;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#2A1F10;cursor:pointer">{{ initials }}</div>
+            <div style="flex:1"></div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:14px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#F07A2E"></span><span style="font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;color:#F07A2E">{{ streak }}</span></div>
+            <div style="display:flex;align-items:center;gap:5px"><span style="font-size:18px;color:#E8A83A">★</span><span style="font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;color:#C98A1E">{{ xpLabel }}</span></div>
+            <div style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:16px;border-radius:3px;border:2.5px solid #E0543F;border-top-width:5px"></span><span style="font-family:Fredoka,sans-serif;font-size:18px;font-weight:700;color:#E0543F">{{ energy }}</span></div>
+          </div>
+          <div style="flex:1;overflow:auto;scrollbar-width:none;padding:18px 20px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#6E675E">{{ greeting }}, {{ firstName }}</div>
+              <div style="font-family:Fredoka,sans-serif;font-size:28px;font-weight:600;line-height:1.1">Class {{ cls }} · pick a world</div>
+            </div>
+            <div style="border-radius:20px;border:2px solid #EFEAE0;padding:16px;display:flex;align-items:center;gap:16px">
+              <div style="{{ goalRing }}"><div style="width:48px;height:48px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:14px;font-weight:700;color:#C98A1E">{{ goalPctLabel }}</div></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:15px;font-weight:800">Daily goal</div><div style="font-size:13px;color:#6E675E">{{ todayXp }} / 50 XP today</div></div>
+              <div onClick="{{ goQuests }}" style="padding:9px 12px;border-radius:12px;border:2px solid #EFEAE0;box-shadow:0 3px 0 #EFEAE0;font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;color:#7B5BD6;cursor:pointer">Quests</div>
+            </div>
+            <div onClick="{{ resumeLab }}" style="border-radius:20px;background:#4B7BE5;box-shadow:0 5px 0 #3257B0;color:#fff;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer" style-active="transform:translateY(3px);box-shadow:0 2px 0 #3257B0">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;opacity:.85;white-space:nowrap">Jump back in · Physics · Unit V</div>
+                <div style="font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;color:#F7C95C;white-space:nowrap">+150 XP</div>
+              </div>
+              <div style="font-family:Fredoka,sans-serif;font-size:21px;font-weight:600;line-height:1.15">Box on an inclined plane</div>
+              <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:10px;border-radius:999px;background:rgba(0,0,0,.2);overflow:hidden"><div style="width:33%;height:100%;border-radius:999px;background:#fff"></div></div><div style="font-size:12px;font-weight:800;white-space:nowrap">2 / 6 steps</div></div>
+            </div>
+            <div style="font-family:Fredoka,sans-serif;font-size:20px;font-weight:600;margin-top:2px">Worlds</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <sc-for list="{{ worlds }}" as="w" hint-placeholder-count="4">
+                <div onClick="{{ w.open }}" style="{{ w.style }}">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start"><div style="font-family:Fredoka,sans-serif;font-size:26px;font-weight:700">{{ w.mark }}</div><div style="padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.16);font-size:11px;font-weight:800">{{ w.tag }}</div></div>
+                  <div style="display:flex;flex-direction:column;gap:6px"><div style="font-size:15px;font-weight:800">{{ w.name }}</div><div style="height:7px;border-radius:4px;background:rgba(0,0,0,.18);overflow:hidden"><div style="{{ w.bar }}"></div></div><div style="font-size:11px;font-weight:700;opacity:.9">{{ w.meta }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- CHAPTERS -->
+      <sc-if value="{{ isChapters }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Chapters" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="flex-shrink:0;background:{{ sColor }};color:#fff;padding:4px 20px 20px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div onClick="{{ goHome }}" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">←</div>
+              <div style="flex:1;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;opacity:.9">Class {{ cls }} · NCERT</div>
+              <div style="padding:6px 11px;border-radius:999px;background:rgba(0,0,0,.18);font-size:12px;font-weight:800;white-space:nowrap">{{ sLevel }}</div>
+            </div>
+            <div style="font-family:Fredoka,sans-serif;font-size:30px;font-weight:700;line-height:1.05">{{ sName }}</div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:12px;border-radius:999px;background:rgba(0,0,0,.2);overflow:hidden"><div style="width:{{ sPct }};height:100%;border-radius:999px;background:#fff"></div></div><div style="font-size:12px;font-weight:800;white-space:nowrap">{{ sMeta }}</div></div>
+          </div>
+          <div style="flex:1;overflow:auto;scrollbar-width:none;padding:16px 16px 24px;display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ chapters }}" as="ch" hint-placeholder-count="6">
+              <div onClick="{{ ch.open }}" style="{{ ch.style }}">
+                <div style="{{ ch.badge }}">{{ ch.no }}</div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:4px;min-width:0"><div style="font-size:14.5px;font-weight:700;line-height:1.3">{{ ch.title }}</div><div style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8A8274">{{ ch.meta }}</div></div>
+                <div style="{{ ch.chipStyle }}">{{ ch.chip }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- PATH -->
+      <sc-if value="{{ isPath }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Chapter path" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="flex-shrink:0;background:{{ sColor }};color:#fff;padding:4px 20px 18px;display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div onClick="{{ goChapters }}" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">←</div>
+              <div style="flex:1;font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;opacity:.9">{{ sName }} · Unit {{ chNo }}</div>
+              <div style="padding:6px 11px;border-radius:999px;background:rgba(0,0,0,.18);font-size:12px;font-weight:800;color:#F7C95C;white-space:nowrap">{{ pathStars }}</div>
+            </div>
+            <div style="font-family:Fredoka,sans-serif;font-size:24px;font-weight:600;line-height:1.15">{{ chTitle }}</div>
+          </div>
+          <div style="flex:1;overflow:auto;scrollbar-width:none;padding:60px 0 40px;background:radial-gradient(rgba(28,24,21,.06) 1px,transparent 1.5px) 0 0/22px 22px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:30px">
+              <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="4">
+                <div onClick="{{ n.open }}" style="{{ n.wrap }}">
+                  <sc-if value="{{ n.isCurrent }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;left:50%;top:-50px;transform:translateX(-50%);white-space:nowrap;padding:8px 14px;border-radius:12px;background:#fff;border:2px solid #EFEAE0;color:{{ sColor }};font-family:Fredoka,sans-serif;font-size:15px;font-weight:700;letter-spacing:.04em">START</div>
+                  </sc-if>
+                  <div style="{{ n.ring }}"><div style="{{ n.node }}">{{ n.glyph }}</div></div>
+                  <div style="{{ n.starStyle }}">★★★</div>
+                  <div style="{{ n.labelStyle }}">{{ n.label }}</div>
+                </div>
+              </sc-for>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:8px;transform:translateX(30px)">
+                <div style="width:80px;height:64px;border-radius:16px;background:#E5E1D8;box-shadow:0 7px 0 #C8C1B3;display:flex;align-items:center;justify-content:center"><div style="width:44px;height:30px;border-radius:6px;border:3px solid #A39B8D;border-top-width:10px"></div></div>
+                <div style="font-size:12px;font-weight:700;color:#8A8274">Unit chest</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- LAB -->
+      <sc-if value="{{ isLab }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Lab" style="flex:1;display:flex;flex-direction:column;overflow:hidden;background:{{ labBg }}">
+          <sc-if value="{{ showLabBar }}" hint-placeholder-val="{{ true }}">
+            <div style="flex-shrink:0;display:flex;align-items:center;gap:14px;padding:6px 20px 4px">
+              <div onClick="{{ exitLab }}" style="font-size:24px;color:#A39B8D;font-weight:700;cursor:pointer;width:22px">×</div>
+              <div style="flex:1;height:16px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:{{ labPct }};height:100%;border-radius:999px;background:#2FA87A;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12);transition:width .3s"></div></div>
+              <div style="display:flex;align-items:center;gap:5px"><span style="width:12px;height:16px;border-radius:3px;border:2.5px solid #E0543F;border-top-width:5px"></span><span style="font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;color:#E0543F">{{ energy }}</span></div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isQ }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;padding:18px 20px 0;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#7B5BD6">{{ qTag }}</div>
+                <div style="font-family:Fredoka,sans-serif;font-size:24px;font-weight:600;line-height:1.2">{{ qTitle }}</div>
+              </div>
+              <sc-if value="{{ isQ0 }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius:18px;background:#1B1713;padding:22px;display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="font-family:Fredoka,sans-serif;font-size:46px;font-weight:600;color:#7CE0B4;letter-spacing:.04em;font-variant-numeric:tabular-nums">00:02.47</div>
+                  <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.6);white-space:nowrap">Least count 0.01 s</div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ isQ1 }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius:18px;border:2px solid #EFEAE0;background:#FBF7F0;padding:22px 16px 10px">
+                  <div style="position:relative;height:96px">
+                    <div style="position:absolute;left:116px;top:0;width:96px;height:34px;border-radius:6px;background:#4B7BE5;box-shadow:0 4px 0 #3257B0"></div>
+                    <div style="position:absolute;left:211px;top:-8px;height:80px;width:2px;background:#E0543F"></div>
+                    <div style="position:absolute;left:0;right:0;top:38px;height:34px;border-radius:4px;background:#F3DDA8;border:1.5px solid #C98A1E"></div>
+                    <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="31"><div style="{{ t.style }}"></div></sc-for>
+                    <sc-for list="{{ tickLabels }}" as="l" hint-placeholder-count="4"><div style="{{ l.style }}">{{ l.text }}</div></sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <sc-for list="{{ options }}" as="o" hint-placeholder-count="4">
+                  <div onClick="{{ o.pick }}" style="{{ o.style }}">{{ o.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="{{ footerStyle }}">
+              <sc-if value="{{ checked }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:{{ resultColor }}">{{ resultTitle }}</div>
+                  <div style="font-size:13.5px;line-height:1.5;color:{{ resultColor }}">{{ resultBody }}</div>
+                </div>
+              </sc-if>
+              <div onClick="{{ onCheck }}" style="{{ checkStyle }}">{{ checkLabel }}</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isBench }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;display:flex;flex-direction:column;padding:10px 16px 30px;gap:14px;color:#FBF7F0;overflow:auto;scrollbar-width:none">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div onClick="{{ exitLab }}" style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer">×</div>
+                <div style="flex:1;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#F7C95C;min-width:0">{{ modeLabel }}</div>
+                <div style="font-family:Fredoka,sans-serif;font-size:14px;font-weight:700;color:#7CE0B4;white-space:nowrap">Warm-up +{{ warmXp }} XP</div>
+              </div>
+              <div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:600;line-height:1.15">{{ labTitle }}</div>
+              <div style="position:relative;height:250px;border-radius:20px;background:linear-gradient(#2A2F3A,#161A22);overflow:hidden;flex-shrink:0">
+                <div style="position:absolute;left:30px;right:30px;bottom:40px;height:10px;background:#8A6A3C;border-radius:3px;transform:rotate(-18deg);transform-origin:left center;box-shadow:0 4px 0 #5C4524"></div>
+                <div style="position:absolute;left:180px;bottom:104px;width:44px;height:32px;border-radius:5px;background:#4B7BE5;box-shadow:0 4px 0 #3257B0;transform:rotate(-18deg)"></div>
+                <div style="position:absolute;left:0;right:0;bottom:26px;height:2px;background:rgba(255,255,255,.12)"></div>
+                <div style="position:absolute;left:14px;top:14px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1);font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.75);white-space:nowrap">3D bench renders here</div>
+              </div>
+              <div style="border-radius:18px;background:rgba(255,255,255,.06);padding:6px 14px">
+                <sc-for list="{{ benchSteps }}" as="st" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:12px;padding:11px 0">
+                    <div style="{{ st.dot }}">{{ st.n }}</div>
+                    <div style="{{ st.text }}">{{ st.label }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div onClick="{{ finishBench }}" style="padding:16px;border-radius:16px;background:#2FA87A;box-shadow:0 4px 0 #1F7A58;text-align:center;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;color:#fff;cursor:pointer;flex-shrink:0" style-active="transform:translateY(3px);box-shadow:0 1px 0 #1F7A58">FINISH RUN · DEMO</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+            <div style="flex:1;padding:24px 22px 34px;display:flex;flex-direction:column;gap:22px;position:relative">
+              {{ confetti }}
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;position:relative">
+                <div style="display:flex;gap:4px;align-items:flex-end"><span style="font-size:48px;color:#E8A83A">★</span><span style="font-size:62px;color:#E8A83A">★</span><span style="font-size:48px;color:{{ star3 }}">★</span></div>
+                <div style="font-family:Fredoka,sans-serif;font-size:32px;font-weight:700;color:#C98A1E;white-space:nowrap;align-self:stretch">Bench cleared!</div>
+                <div style="font-size:14px;color:#6E675E;line-height:1.5;align-self:stretch">{{ labTitle }}</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;position:relative">
+                <div style="border-radius:16px;background:#E8A83A;padding:3px;display:flex;flex-direction:column"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-align:center;padding:5px 0">Total XP</div><div style="border-radius:13px;background:#fff;padding:12px 4px;text-align:center;font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#C98A1E">{{ earned }}</div></div>
+                <div style="border-radius:16px;background:#2FA87A;padding:3px;display:flex;flex-direction:column"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-align:center;padding:5px 0">Warm-up</div><div style="border-radius:13px;background:#fff;padding:12px 4px;text-align:center;font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#1F7A58">{{ correctLabel }}</div></div>
+                <div style="border-radius:16px;background:#4B7BE5;padding:3px;display:flex;flex-direction:column"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-align:center;padding:5px 0">Streak</div><div style="border-radius:13px;background:#fff;padding:12px 4px;text-align:center;font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#3257B0">{{ streak }}</div></div>
+              </div>
+              <div onClick="{{ claimLab }}" style="padding:16px;border-radius:16px;background:#4B7BE5;box-shadow:0 4px 0 #3257B0;text-align:center;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;color:#fff;cursor:pointer;position:relative" style-active="transform:translateY(3px);box-shadow:0 1px 0 #3257B0">CLAIM XP</div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- QUESTS -->
+      <sc-if value="{{ isQuests }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Quests" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div style="flex-shrink:0;background:#7B5BD6;color:#fff;padding:6px 22px 22px;display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.85">September challenge</div>
+            <div style="font-family:Fredoka,sans-serif;font-size:26px;font-weight:600;line-height:1.15">Catch 10 instrument faults</div>
+            <div style="display:flex;align-items:center;gap:10px"><div style="flex:1;height:16px;border-radius:999px;background:rgba(0,0,0,.2);overflow:hidden"><div style="width:30%;height:100%;border-radius:999px;background:#F7C95C"></div></div><div style="font-family:Fredoka,sans-serif;font-weight:700">3/10</div></div>
+          </div>
+          <div style="flex:1;overflow:auto;scrollbar-width:none;padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-family:Fredoka,sans-serif;font-size:21px;font-weight:600">Daily quests</div><div style="font-size:12px;font-weight:800;color:#E8A83A">4 hours left</div></div>
+            <div style="border-radius:18px;border:2px solid #EFEAE0;padding:6px 16px">
+              <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:2px solid #EFEAE0">
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="font-size:14px;font-weight:700">Earn 50 XP today</div><div style="height:14px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:{{ goalPct }};height:100%;background:#E8A83A;border-radius:999px"></div></div></div>
+                <div onClick="{{ openChest }}" style="{{ chestStyle }}">{{ chestLabel }}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:2px solid #EFEAE0">
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="font-size:14px;font-weight:700">Log 5 readings at least count</div><div style="height:14px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:60%;height:100%;background:#4B7BE5;border-radius:999px"></div></div></div>
+                <div style="width:52px;height:44px;border-radius:10px;background:#E5E1D8;box-shadow:0 4px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;color:#8A8274">3/5</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;padding:14px 0">
+                <div style="flex:1;display:flex;flex-direction:column;gap:8px"><div style="font-size:14px;font-weight:700">Finish a bench with 3 stars</div><div style="height:14px;border-radius:999px;background:#EFEAE0;overflow:hidden"><div style="width:0%;height:100%;background:#2FA87A"></div></div></div>
+                <div style="width:52px;height:44px;border-radius:10px;background:#E5E1D8;box-shadow:0 4px 0 #C8C1B3;display:flex;align-items:center;justify-content:center;font-family:Fredoka,sans-serif;font-size:13px;font-weight:700;color:#8A8274">0/1</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- YOU -->
+      <sc-if value="{{ isYou }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="You" style="flex:1;overflow:auto;scrollbar-width:none;padding:12px 20px 24px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="width:72px;height:72px;border-radius:50%;background:#C79F6E;border:4px solid #F3DDA8;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#2A1F10">{{ initials }}</div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:4px"><div style="font-family:Fredoka,sans-serif;font-size:24px;font-weight:600">{{ userName }}</div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#6E675E">Class {{ cls }} · {{ board }}</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+            <div style="border-radius:16px;border:2px solid #EFEAE0;padding:12px;display:flex;flex-direction:column;gap:2px"><div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#F07A2E">{{ streak }}</div><div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6E675E">Day streak</div></div>
+            <div style="border-radius:16px;border:2px solid #EFEAE0;padding:12px;display:flex;flex-direction:column;gap:2px"><div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#C98A1E">{{ xpLabel }}</div><div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6E675E">Total XP</div></div>
+            <div style="border-radius:16px;border:2px solid #EFEAE0;padding:12px;display:flex;flex-direction:column;gap:2px"><div style="font-family:Fredoka,sans-serif;font-size:22px;font-weight:700;color:#2FA87A">{{ benchesDone }}</div><div style="font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#6E675E">Benches</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-family:Fredoka,sans-serif;font-size:19px;font-weight:600">Your class</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ classChips }}" as="c" hint-placeholder-count="5"><div onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.num }}</div></sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="font-family:Fredoka,sans-serif;font-size:19px;font-weight:600">Badges</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 10px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:58px;height:64px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#E0543F;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700">0e</div><div style="font-size:11px;font-weight:700;text-align:center">Zero-error detective</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:58px;height:64px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#4B7BE5;display:flex;align-items:center;justify-content:center;color:#fff;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700">LC</div><div style="font-size:11px;font-weight:700;text-align:center">Least-count keeper</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:58px;height:64px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#E5E1D8;display:flex;align-items:center;justify-content:center;color:#8A8274;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700">R²</div><div style="font-size:11px;font-weight:700;text-align:center;color:#8A8274">Clean fit</div></div>
+            </div>
+          </div>
+          <div onClick="{{ startOver }}" style="padding:14px;border-radius:16px;border:2px solid #F2A194;text-align:center;font-family:Fredoka,sans-serif;font-size:15px;font-weight:700;letter-spacing:.06em;color:#A83A2B;cursor:pointer">START OVER</div>
+        </div>
+      </sc-if>
+
+      <!-- LAB INTRO SHEET -->
+      <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(27,23,19,.45)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:28px 28px 0 0;padding:12px 20px 30px;display:flex;flex-direction:column;gap:14px">
+          <div style="width:44px;height:5px;border-radius:3px;background:#E5E1D8;align-self:center"></div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:{{ sDark }}">{{ sName }} · Unit {{ chNo }}</div>
+          <div style="font-family:Fredoka,sans-serif;font-size:24px;font-weight:600;line-height:1.15">{{ sheetTitle }}</div>
+          <div style="font-size:13.5px;color:#4E473E;line-height:1.55">{{ sheetDesc }}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="padding:7px 12px;border-radius:999px;background:#F5F1E9;font-size:12px;font-weight:800;color:#4E473E">{{ sheetMins }} min</div>
+            <div style="padding:7px 12px;border-radius:999px;background:#FDF3DD;font-size:12px;font-weight:800;color:#C98A1E">+{{ sheetXp }} XP</div>
+            <div style="padding:7px 12px;border-radius:999px;background:#F5F1E9;font-size:12px;font-weight:800;color:#4E473E">{{ sheetDiff }}</div>
+          </div>
+          <div style="display:flex;padding:4px;border-radius:14px;background:#F5F1E9;gap:4px">
+            <div onClick="{{ setGuided }}" style="{{ guidedStyle }}">Guided</div>
+            <div onClick="{{ setFree }}" style="{{ freeStyle }}">Free play</div>
+          </div>
+          <div onClick="{{ startLab }}" style="padding:16px;border-radius:16px;background:{{ sColor }};box-shadow:0 4px 0 {{ sDark }};text-align:center;font-family:Fredoka,sans-serif;font-size:17px;font-weight:700;letter-spacing:.06em;color:#fff;cursor:pointer">START BENCH</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:20px;right:20px;bottom:16px;padding:14px 16px;border-radius:14px;background:#1B1713;color:#FBF7F0;font-size:13.5px;font-weight:700;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,.2)">{{ toast }}</div>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ false }}">
+      <div style="flex-shrink:0;display:flex;justify-content:space-around;padding:10px 12px 26px;border-top:2px solid #EFEAE0;background:#fff">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3"><div onClick="{{ t.go }}" style="{{ t.style }}">{{ t.label }}</div></sc-for>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;940px&quot;},&quot;startAt&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;splash&quot;,&quot;home&quot;],&quot;default&quot;:&quot;splash&quot;,&quot;tsType&quot;:&quot;'splash' | 'home'&quot;},&quot;streak&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:0,&quot;max&quot;:365},&quot;celebrate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const SUBJ = [
+  { key: 'physics', name: 'Physics', mark: 'Ph', c: '#4B7BE5', d: '#3257B0', soft: '#EAF0FD', done: 3, total: 22, lv: 3 },
+  { key: 'chemistry', name: 'Chemistry', mark: 'Ch', c: '#2FA87A', d: '#1F7A58', soft: '#E6F7EF', done: 2, total: 20, lv: 2 },
+  { key: 'biology', name: 'Biology', mark: 'Bi', c: '#D98A2B', d: '#A8661A', soft: '#FCF0E0', done: 1, total: 16, lv: 1 },
+  { key: 'space', name: 'Space', mark: 'Sp', c: '#7B5BD6', d: '#5638A8', soft: '#F1ECFC', done: 0, total: 13, lv: 1, bonus: true },
+];
+const CLASSES = [
+  { num: '8', blurb: 'Force, microbes and a first look at matter' },
+  { num: '9', blurb: 'Motion, atoms and cells on a proper bench' },
+  { num: '10', blurb: 'Board year. Every prescribed experiment' },
+  { num: '11', blurb: 'Mechanics, thermodynamics, organic chemistry' },
+  { num: '12', blurb: 'Optics, electrostatics and genetics' },
+];
+const BOARDS = ['CBSE', 'ICSE', 'State board'];
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV'];
+const CH = {
+  physics: ['Units and Measurements','Motion in a Straight Line','Motion in a Plane','Laws of Motion','Work, Energy and Power','System of Particles and Rotational Motion','Gravitation','Mechanical Properties of Solids','Mechanical Properties of Fluids','Thermal Properties of Matter','Thermodynamics','Kinetic Theory','Oscillations','Waves'],
+  chemistry: ['Some Basic Concepts of Chemistry','Structure of Atom','Classification of Elements and Periodicity','Chemical Bonding and Molecular Structure','Thermodynamics','Equilibrium','Redox Reactions','Organic Chemistry — Some Basic Principles','Hydrocarbons'],
+  biology: ['The Living World','Biological Classification','Plant Kingdom','Animal Kingdom','Morphology of Flowering Plants','Anatomy of Flowering Plants & Plant Physiology','Structural Organisation in Animals','Cell — The Unit of Life','Biomolecules'],
+  space: ['Surface Gravity Across the Solar System','Orbits and Escape Velocity','Launch Windows and Transfer Orbits','Life Support and Microgravity','Telescopes and the Deep Field'],
+};
+const LIVE = { physics: 'V', chemistry: 'VI', biology: 'VI', space: 'I' };
+const LABS = {
+  physics: [
+    { id: 'incline', title: 'Box on an inclined plane', glyph: 'θ', mins: 18, xp: 150, diff: 'Intermediate', built: true, desc: 'Release a block down a ramp, time it yourself, and test whether work done equals the change in kinetic energy.', steps: ['Weigh the block', 'Measure rise and run', 'Five timed runs', 'Plot v² against s', 'Read μ off the gradient', 'Audit the energy'] },
+    { id: 'spring', title: 'Potential energy of a spring', glyph: 'k' },
+    { id: 'collisions', title: 'Elastic and inelastic collisions', glyph: 'p' },
+    { id: 'power', title: 'Power output climbing stairs', glyph: 'W' },
+  ],
+  chemistry: [
+    { id: 'indicators', title: 'Study of acid–base indicators', glyph: 'In', mins: 12, xp: 120, diff: 'Beginner', built: true, desc: 'Watch phenolphthalein, methyl orange and litmus change colour and find each transition range.', steps: ['Set up three indicators', 'Add acid drop by drop', 'Record each colour change', 'Find the transition ranges'] },
+    { id: 'ph', title: 'pH of different solutions', glyph: 'pH', mins: 15, xp: 130, diff: 'Beginner', built: true, desc: 'Measure pH with universal indicator strips and a digital probe, then compare the two.', steps: ['Calibrate the probe', 'Dip the strip', 'Match the colour chart', 'Compare with the meter'] },
+  ],
+  biology: [
+    { id: 'plant', title: 'Plasmolysis, stomata and transpiration', glyph: 'St', mins: 18, xp: 150, diff: 'Beginner', built: true, desc: 'Plasmolyse a Rhoeo peel, count stomata in the field of view, and time a cobalt chloride strip.', steps: ['Mount the Rhoeo peel', 'Add salt solution', 'Count stomata', 'Time the cobalt chloride strip'] },
+  ],
+  space: [
+    { id: 'gravity', title: 'Launching a rover on eleven worlds', glyph: 'g', mins: 20, xp: 160, diff: 'Intermediate', built: true, desc: 'Drive off a launch deck on world after world and pull the gravity out of your landing marks.', steps: ['Pick a world', 'Launch from the deck', 'Measure the landing range', 'Plot R² against 1/g'] },
+    { id: 'escape', title: 'Escape velocity from a rocky body', glyph: 'v' },
+    { id: 'weight', title: 'Weighing yourself on every planet', glyph: 'W' },
+  ],
+};
+const QS = [
+  { tag: 'Warm-up · Stopwatch', title: 'How should you record this stopwatch reading?', opts: ['2.5 s', '2.47 s', '2.470 s', '2 s'], ok: '2.47 s',
+    why: { '2.5 s': 'You threw away a digit the watch gives you. Record to 0.01 s.', '2.470 s': 'The watch only reads to 0.01 s. A third decimal claims precision you don’t have.', '2 s': 'That rounds away most of the reading. Record to 0.01 s.' } },
+  { tag: 'Warm-up · Metre scale', title: 'Where does the block’s front edge sit on the scale?', opts: ['12.35 cm', '12.4 cm', '12 cm', '124 mm'], ok: '12.4 cm',
+    why: { '12.35 cm': 'The scale reads to 0.1 cm. A second decimal is a guess, not a reading.', '12 cm': 'You rounded away a whole graduation. Read to the nearest 0.1 cm.', '124 mm': 'Same length, but the bench records cm to the least count.' } },
+];
+const OFFS = [0, -60, -70, -20, 40, 60];
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    const home = (p.startAt ?? 'splash') === 'home';
+    this.state = {
+      screen: home ? 'home' : 'splash',
+      user: home ? { name: 'Aarav Pandey', cls: '11', board: 'CBSE' } : null,
+      onb: 0, nameDraft: '', clsPick: null, boardPick: null,
+      xp: 1240, today: 20, energy: 5, done: {}, subject: 'physics', ch: 'V',
+      sheet: null, mode: 'guided', lab: null, stage: 'q0', pick: null, checked: false, correct: 0,
+      toast: null, chest: false,
+    };
+  }
+  componentWillUnmount() { clearTimeout(this.tt); }
+  flash(m) { clearTimeout(this.tt); this.setState({ toast: m }); this.tt = setTimeout(() => this.setState({ toast: null }), 2200); }
+  labsFor(k) { return LABS[k] || []; }
+
+  renderVals() {
+    const s = this.state;
+    const S = SUBJ.find(x => x.key === s.subject);
+    const u = s.user || { name: 'Student', cls: '11', board: 'CBSE' };
+    const first = u.name.split(' ')[0];
+    const initials = u.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const h = new Date().getHours();
+    const white = ['splash', 'chapters', 'path'].includes(s.screen) || (s.screen === 'quests') || (s.screen === 'lab' && s.stage === 'bench');
+    const statusBg = s.screen === 'splash' ? '#4B7BE5' : s.screen === 'quests' ? '#7B5BD6' : ['chapters', 'path'].includes(s.screen) ? S.c : (s.screen === 'lab' && s.stage === 'bench') ? '#1B1713' : '#fff';
+    const btn = { padding: 16, borderRadius: 16, textAlign: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 17, fontWeight: 700, letterSpacing: '.06em', cursor: 'pointer', flexShrink: 0 };
+    const on = (c, d) => ({ ...btn, background: c, boxShadow: `0 4px 0 ${d}`, color: '#fff' });
+    const off = { ...btn, background: '#E5E1D8', color: '#A39B8D', cursor: 'default' };
+    const tileBase = { borderRadius: 16, border: '2px solid #EFEAE0', boxShadow: '0 4px 0 #EFEAE0', background: '#fff', cursor: 'pointer' };
+    const tileOn = { border: '2px solid #9DB8F2', background: '#EAF0FD', boxShadow: '0 4px 0 #9DB8F2', color: '#3257B0' };
+
+    // onboarding
+    const onbCan = [s.nameDraft.trim().length >= 2, !!s.clsPick, !!s.boardPick, true][s.onb];
+    const onbNext = () => {
+      if (!onbCan) return;
+      if (s.onb < 3) return this.setState({ onb: s.onb + 1 });
+      this.setState({ screen: 'home', user: { name: s.nameDraft.trim(), cls: s.clsPick, board: s.boardPick }, xp: 50, today: 50, done: {} });
+      this.flash('+50 XP banked. Daily goal done!');
+    };
+
+    // lab
+    const lab = s.lab ? this.labsFor(s.subject).find(l => l.id === s.lab) : null;
+    const qi = s.stage === 'q0' ? 0 : s.stage === 'q1' ? 1 : -1;
+    const Q = qi >= 0 ? QS[qi] : null;
+    const ok = Q && s.pick === Q.ok;
+    const tile = { padding: '18px 10px', borderRadius: 16, border: '2px solid #EFEAE0', boxShadow: '0 4px 0 #EFEAE0', textAlign: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 19, fontWeight: 600, cursor: s.checked ? 'default' : 'pointer', background: '#fff' };
+    const options = Q ? Q.opts.map(l => {
+      let st = tile;
+      if (s.pick === l && !s.checked) st = { ...tile, ...tileOn };
+      if (s.checked && l === Q.ok) st = { ...tile, border: '2px solid #8FD9B8', background: '#E6F7EF', boxShadow: '0 4px 0 #8FD9B8', color: '#1F7A58' };
+      if (s.checked && s.pick === l && !ok) st = { ...tile, border: '2px solid #F2A194', background: '#FDECE9', boxShadow: '0 4px 0 #F2A194', color: '#A83A2B' };
+      return { label: l, style: st, pick: () => !s.checked && this.setState({ pick: l }) };
+    }) : [];
+    let checkStyle = s.pick ? on('#2FA87A', '#1F7A58') : off;
+    if (s.checked && !ok) checkStyle = on('#E0543F', '#A83A2B');
+    const onCheck = () => {
+      if (!s.pick) return;
+      if (!s.checked) return this.setState({ checked: true, correct: s.correct + (ok ? 1 : 0), energy: ok ? s.energy : Math.max(0, s.energy - 1) });
+      this.setState({ stage: qi === 0 ? 'q1' : 'bench', pick: null, checked: false });
+    };
+    const X0 = 20, MM = 8;
+    const ticks = Array.from({ length: 31 }, (_, i) => ({ style: { position: 'absolute', top: 39.5, left: X0 + i * MM, width: i % 10 === 0 ? 1.5 : 1, height: i % 10 === 0 ? 16 : i % 5 === 0 ? 11 : 7, background: '#6E4A20' } }));
+    const tickLabels = [10, 11, 12, 13].map((n, i) => ({ text: n === 13 ? '13 cm' : String(n), style: { position: 'absolute', top: 78, left: X0 + i * 80, transform: 'translateX(-50%)', fontSize: 11, fontWeight: 700, color: '#6E4A20', whiteSpace: 'nowrap' } }));
+    const earned = lab ? lab.xp + s.correct * 10 : 0;
+    let confetti = null;
+    if (s.screen === 'lab' && s.stage === 'done' && (this.props.celebrate ?? true)) {
+      const cols = ['#E8A83A', '#4B7BE5', '#2FA87A', '#E0543F', '#7B5BD6'];
+      confetti = React.createElement('div', { style: { position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' } },
+        React.createElement('style', null, '@keyframes acefall3{0%{transform:translateY(-40px) rotate(0)}100%{transform:translateY(900px) rotate(540deg)}}'),
+        Array.from({ length: 26 }).map((_, i) => React.createElement('div', { key: i, style: { position: 'absolute', left: ((i * 37) % 100) + '%', top: 0, width: i % 3 ? 8 : 11, height: i % 2 ? 13 : 8, borderRadius: i % 4 === 0 ? '50%' : 2, background: cols[i % cols.length], animation: `acefall3 ${3.2 + (i % 5) * .6}s linear ${-(i * .37)}s infinite` } })));
+    }
+
+    // path
+    const labs = this.labsFor(s.subject);
+    const currentId = (labs.find(l => l.built && !s.done[l.id]) || {}).id;
+    const nodes = labs.map((l, i) => {
+      const isDone = !!s.done[l.id], cur = l.id === currentId, locked = !l.built;
+      const bg = isDone ? ['#E8A83A', '#B77E1E'] : locked ? ['#E5E1D8', '#C8C1B3'] : [S.c, S.d];
+      const open = () => locked ? this.flash('This bench is still being built') : this.setState({ sheet: l.id, mode: 'guided' });
+      return {
+        label: l.title, glyph: isDone ? '★' : locked ? l.glyph : l.glyph, isCurrent: cur, open,
+        wrap: { position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, transform: `translateX(${OFFS[i % OFFS.length]}px)`, cursor: 'pointer', marginTop: cur && i > 0 ? 30 : 0 },
+        ring: cur ? { width: 96, height: 96, borderRadius: '50%', border: `5px solid ${S.soft}`, display: 'flex', alignItems: 'center', justifyContent: 'center' } : {},
+        node: { width: 74, height: 68, borderRadius: '50%', background: bg[0], boxShadow: `0 7px 0 ${bg[1]}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: locked ? '#A39B8D' : '#fff', fontFamily: 'Fredoka,sans-serif', fontSize: isDone ? 30 : 22, fontWeight: 700 },
+        starStyle: { fontSize: 13, letterSpacing: 2, color: isDone ? '#E8A83A' : 'transparent', height: 14 },
+        labelStyle: { fontSize: 12, fontWeight: 700, textAlign: 'center', width: 160, lineHeight: 1.3, color: locked ? '#8A8274' : '#1B1713' },
+      };
+    });
+    const doneHere = labs.filter(l => s.done[l.id]).length;
+    const sheetLab = s.sheet ? labs.find(l => l.id === s.sheet) : null;
+    const seg = a => ({ flex: 1, padding: '10px 0', borderRadius: 11, textAlign: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 15, fontWeight: 700, cursor: 'pointer', background: a ? '#fff' : 'transparent', color: a ? '#1B1713' : '#8A8274', boxShadow: a ? '0 2px 0 #E5E1D8' : 'none' });
+
+    // chapters
+    const titles = CH[s.subject] || [];
+    const chapters = titles.map((t, i) => {
+      const no = ROMAN[i], live = LIVE[s.subject] === no;
+      return {
+        no, title: t, meta: live ? `${labs.length} benches · ${labs.filter(l => l.built).length} live` : '3 benches',
+        chip: live ? 'LIVE' : 'Soon',
+        style: { display: 'flex', alignItems: 'center', gap: 14, padding: 14, borderRadius: 18, border: `2px solid ${live ? S.c : '#EFEAE0'}`, boxShadow: `0 4px 0 ${live ? S.d : '#EFEAE0'}`, background: live ? S.soft : '#fff', cursor: 'pointer' },
+        badge: { width: 44, height: 44, borderRadius: 13, flexShrink: 0, background: live ? S.c : '#F5F1E9', color: live ? '#fff' : '#8A8274', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 15, fontWeight: 700 },
+        chipStyle: { whiteSpace: 'nowrap', padding: '5px 9px', borderRadius: 999, fontSize: 10.5, fontWeight: 800, letterSpacing: '.08em', background: live ? S.c : 'transparent', color: live ? '#fff' : '#A39B8D', flexShrink: 0 },
+        open: () => live ? this.setState({ screen: 'path', ch: no }) : this.flash('Benches for this chapter are being built'),
+      };
+    });
+
+    const worlds = SUBJ.map(w => {
+      const d = w.done + labsDoneIn(s.done, w.key);
+      return {
+        mark: w.mark, name: w.name, tag: w.bonus ? 'Bonus' : `Lv ${w.lv}`, meta: `${d} of ${w.total} benches`,
+        style: { borderRadius: 20, background: w.c, boxShadow: `0 5px 0 ${w.d}`, padding: 14, color: '#fff', display: 'flex', flexDirection: 'column', gap: 18, cursor: 'pointer' },
+        bar: { width: `${Math.max(3, d / w.total * 100)}%`, height: '100%', borderRadius: 4, background: '#fff' },
+        open: () => this.setState({ screen: 'chapters', subject: w.key }),
+      };
+    });
+    const goalP = Math.min(100, Math.round(s.today / 50 * 100));
+    const tabDefs = [['home', 'Learn', '#9DB8F2', '#EAF0FD', '#3257B0'], ['quests', 'Quests', '#C3B2F0', '#F1ECFC', '#5638A8'], ['you', 'You', '#F3D48F', '#FDF3DD', '#A8661A']];
+    const chestBase = { width: 52, height: 44, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 13, fontWeight: 700, cursor: 'pointer' };
+
+    return {
+      statusStyle: { height: 44, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 28px', fontSize: 14, fontWeight: 700, background: statusBg, color: white ? '#fff' : '#1B1713' },
+      isSplash: s.screen === 'splash', isOnb: s.screen === 'onb', isHome: s.screen === 'home', isChapters: s.screen === 'chapters', isPath: s.screen === 'path', isLab: s.screen === 'lab', isQuests: s.screen === 'quests', isYou: s.screen === 'you',
+      startOnboarding: () => this.setState({ screen: 'onb', onb: 0 }),
+      skipToHome: () => this.setState({ screen: 'home', user: { name: 'Aarav Pandey', cls: '11', board: 'CBSE' } }),
+      // onboarding
+      onbPct: `${(s.onb + 1) * 25}%`,
+      onbEyebrow: ['Step 1 of 3', 'Step 2 of 3', 'Step 3 of 3', 'Ready'][s.onb],
+      onbTitle: ['What should we call you?', 'Which class are you in?', 'Which board do you follow?', `You’re all set, ${s.nameDraft.trim().split(' ')[0] || 'friend'}!`][s.onb],
+      isOnb0: s.onb === 0, isOnb1: s.onb === 1, isOnb2: s.onb === 2, isOnb3: s.onb === 3,
+      nameDraft: s.nameDraft, onName: e => this.setState({ nameDraft: e.target.value }),
+      classOpts: CLASSES.map(c => {
+        const a = s.clsPick === c.num;
+        return { num: c.num, blurb: c.blurb, pick: () => this.setState({ clsPick: c.num }),
+          style: { ...tileBase, ...(a ? tileOn : {}), display: 'flex', alignItems: 'center', gap: 14, padding: 12, color: '#1B1713' },
+          numStyle: { width: 46, height: 46, borderRadius: 13, background: a ? '#4B7BE5' : '#F5F1E9', color: a ? '#fff' : '#4E473E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 20, fontWeight: 700, flexShrink: 0 } };
+      }),
+      boardOpts: BOARDS.map(b => ({ label: b, pick: () => this.setState({ boardPick: b }), style: { ...tileBase, ...(s.boardPick === b ? tileOn : {}), padding: 18, fontFamily: 'Fredoka,sans-serif', fontSize: 18, fontWeight: 600 } })),
+      clsPick: s.clsPick, boardPick: s.boardPick,
+      onbNext, onbNextStyle: onbCan ? on('#2FA87A', '#1F7A58') : off, onbNextLabel: s.onb === 3 ? 'START LEARNING' : 'CONTINUE',
+      onbBack: () => s.onb > 0 ? this.setState({ onb: s.onb - 1 }) : this.setState({ screen: 'splash' }),
+      // home
+      initials, firstName: first, userName: u.name, cls: u.cls, board: u.board,
+      greeting: h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening',
+      streak: this.props.streak ?? 6, energy: s.energy, xpLabel: s.xp.toLocaleString(),
+      todayXp: s.today, goalPct: `${goalP}%`, goalPctLabel: `${goalP}%`,
+      goalRing: { width: 60, height: 60, borderRadius: '50%', flexShrink: 0, background: `conic-gradient(#E8A83A 0 ${goalP}%, #EFEAE0 ${goalP}% 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center' },
+      worlds,
+      resumeLab: () => this.setState({ subject: 'physics', ch: 'V', screen: 'path', sheet: 'incline', mode: 'guided' }),
+      goHome: () => this.setState({ screen: 'home' }), goQuests: () => this.setState({ screen: 'quests' }), goYou: () => this.setState({ screen: 'you' }),
+      goChapters: () => this.setState({ screen: 'chapters' }),
+      // subject
+      sColor: S.c, sDark: S.d, sName: S.name, sLevel: S.bonus ? 'Bonus' : `Lv ${S.lv}`,
+      sPct: `${Math.max(3, (S.done + labsDoneIn(s.done, S.key)) / S.total * 100)}%`, sMeta: `${S.done + labsDoneIn(s.done, S.key)}/${S.total}`,
+      chapters, chNo: s.ch, chTitle: titles[ROMAN.indexOf(s.ch)] || '',
+      nodes, pathStars: `${doneHere * 3}/${labs.length * 3} ★`,
+      // sheet
+      sheetOpen: !!sheetLab, closeSheet: () => this.setState({ sheet: null }),
+      sheetTitle: sheetLab?.title, sheetDesc: sheetLab?.desc, sheetMins: sheetLab?.mins, sheetXp: sheetLab?.xp, sheetDiff: sheetLab?.diff,
+      guidedStyle: seg(s.mode === 'guided'), freeStyle: seg(s.mode === 'free'),
+      setGuided: () => this.setState({ mode: 'guided' }), setFree: () => this.setState({ mode: 'free' }),
+      startLab: () => this.setState({ screen: 'lab', lab: s.sheet, sheet: null, stage: s.mode === 'free' ? 'bench' : 'q0', pick: null, checked: false, correct: 0 }),
+      // lab
+      labBg: s.stage === 'bench' ? '#1B1713' : '#fff',
+      showLabBar: s.stage === 'q0' || s.stage === 'q1',
+      labPct: `${s.stage === 'q0' ? (s.checked && ok ? 33 : 10) : (s.checked && ok ? 66 : 40)}%`,
+      exitLab: () => this.setState({ screen: 'path', lab: null }),
+      isQ: !!Q, isQ0: qi === 0, isQ1: qi === 1, isBench: s.stage === 'bench', isDone: s.stage === 'done',
+      qTag: Q?.tag, qTitle: Q?.title, options, ticks, tickLabels,
+      checked: s.checked, resultTitle: ok ? 'Clean reading!' : 'Not quite',
+      resultBody: Q ? (ok ? 'Right to the least count. +10 XP' : `${Q.why[s.pick] || ''} Correct: ${Q.ok}`) : '',
+      resultColor: ok ? '#1F7A58' : '#A83A2B',
+      footerStyle: { flexShrink: 0, padding: '20px 20px 34px', display: 'flex', flexDirection: 'column', gap: 14, background: s.checked ? (ok ? '#E6F7EF' : '#FDECE9') : '#fff', borderTop: s.checked ? 'none' : '2px solid #EFEAE0' },
+      checkStyle, checkLabel: s.checked ? (ok ? 'CONTINUE' : 'GOT IT') : 'CHECK', onCheck,
+      labTitle: lab?.title || '', modeLabel: s.mode === 'free' ? 'Free play · nothing validated' : 'Guided · step 1', warmXp: s.correct * 10,
+      benchSteps: (lab?.steps || []).map((t, i) => ({ n: i + 1, label: t,
+        dot: { width: 28, height: 28, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Fredoka,sans-serif', fontSize: 13, fontWeight: 700, background: i === 0 ? '#F7C95C' : 'rgba(255,255,255,.1)', color: i === 0 ? '#1B1713' : 'rgba(255,255,255,.6)' },
+        text: { flex: 1, minWidth: 0, fontSize: 13.5, fontWeight: i === 0 ? 800 : 600, color: i === 0 ? '#fff' : 'rgba(255,255,255,.65)' } })),
+      finishBench: () => this.setState({ stage: 'done' }),
+      star3: s.correct === 2 ? '#E8A83A' : '#E5E1D8', earned, correctLabel: `${s.correct}/2`, confetti,
+      claimLab: () => { this.setState({ screen: 'path', xp: s.xp + earned, today: s.today + earned, done: { ...s.done, [s.lab]: true }, lab: null }); this.flash(`+${earned} XP banked`); },
+      // quests / you
+      openChest: () => { if (goalP < 100) return this.flash('Hit 50 XP today to open it'); if (!s.chest) { this.setState({ chest: true, xp: s.xp + 20 }); this.flash('+20 XP from the chest'); } },
+      chestLabel: s.chest ? '+20' : goalP < 100 ? `${goalP}%` : 'Open',
+      chestStyle: s.chest ? { ...chestBase, background: '#FDF3DD', color: '#C98A1E', border: '2px solid #F3D48F' } : goalP < 100 ? { ...chestBase, background: '#E5E1D8', boxShadow: '0 4px 0 #C8C1B3', color: '#8A8274' } : { ...chestBase, background: '#E8A83A', boxShadow: '0 4px 0 #B77E1E', color: '#fff' },
+      benchesDone: SUBJ.reduce((a, w) => a + w.done, 0) + Object.keys(s.done).length,
+      classChips: CLASSES.map(c => ({ num: `Class ${c.num}`, pick: () => this.setState({ user: { ...u, cls: c.num } }),
+        style: { ...tileBase, ...(u.cls === c.num ? tileOn : {}), padding: '10px 14px', fontFamily: 'Fredoka,sans-serif', fontSize: 15, fontWeight: 600, boxShadow: u.cls === c.num ? '0 3px 0 #9DB8F2' : '0 3px 0 #EFEAE0' } })),
+      startOver: () => this.setState({ screen: 'splash', user: null, onb: 0, nameDraft: '', clsPick: null, boardPick: null, xp: 0, today: 0, done: {}, chest: false }),
+      // chrome
+      hasToast: !!s.toast, toast: s.toast,
+      showTabs: ['home', 'quests', 'you'].includes(s.screen),
+      tabs: tabDefs.map(([k, l, b, bg, c]) => ({ label: l, go: () => this.setState({ screen: k }),
+        style: { padding: '10px 16px', borderRadius: 12, fontFamily: 'Fredoka,sans-serif', fontSize: 14, fontWeight: 700, cursor: 'pointer', border: `2px solid ${s.screen === k ? b : 'transparent'}`, background: s.screen === k ? bg : 'transparent', color: s.screen === k ? c : '#A39B8D' } })),
+    };
+  }
+}
+function labsDoneIn(done, key) { return (LABS[key] || []).filter(l => done[l.id]).length; }
+</script>
+</body>
+</html>
