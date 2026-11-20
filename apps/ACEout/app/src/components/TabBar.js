@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { color, font, radius, soften } from '../theme';
+import { useOrg } from '../store/OrgState';
 
 const TABS = [
   { route: 'Subjects', label: 'Learn', tone: color.blue },
@@ -10,11 +11,16 @@ const TABS = [
   { route: 'Profile', label: 'You', tone: color.green },
 ];
 
+// In School/College mode the first tab is the org dashboard.
+const ORG_HOME = { route: 'OrgDashboard', label: 'Home', tone: color.blue };
+
 export default function TabBar({ navigation, active }) {
   const insets = useSafeAreaInsets();
+  const { isOrg } = useOrg();
+  const tabs = isOrg ? [ORG_HOME, ...TABS.slice(1)] : TABS;
   return (
     <View style={[styles.bar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-      {TABS.map((t) => {
+      {tabs.map((t) => {
         const on = t.route === active;
         const skin = soften[t.tone];
         return (

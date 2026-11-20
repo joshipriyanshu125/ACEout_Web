@@ -4,26 +4,26 @@ import cors from "cors";
 
 import { prisma } from "./lib/prisma.js";
 import { authRouter } from "./routes/auth.routes.js";
-import { teacherRouter } from "./routes/teacher.routes.js";
 import { studentRouter } from "./routes/student.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// The admin panel (Vite, :5174) and the app's web build (Expo, :8081) run on
+// localhost in development; native builds send no Origin at all. Extra origins
+// for a deployed panel go in CORS_ORIGINS, comma separated.
+const extraOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:3000",
-      "http://127.0.0.1:5173",
-      "http://127.0.0.1:5174",
-    ],
-    credentials: true,
+    origin: (origin, cb) =>
+      cb(null, !origin || /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) || extraOrigins.includes(origin)),
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "512kb" }));
 
 app.use((req, _res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -47,7 +47,6 @@ app.get("/health", async (_req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/teacher", teacherRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/admin", adminRouter);
 
@@ -56,12 +55,18 @@ app.use((_req, res) => {
 });
 
 app.use((err, _req, res, _next) => {
+  if (err.status && err.status < 500) {
+    return res.status(err.status).json({ error: err.message });
+  }
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Malformed JSON body" });
+  }
   console.error("Server error:", err);
-  
+
   if (err.code === "P2002") {
     return res.status(409).json({ error: "That record already exists" });
   }
-  res.status(500).json({ error: "Internal Server Error", message: err.message });
+  res.status(500).json({ error: "Something went wrong on the server" });
 });
 
 app.listen(PORT, () => {

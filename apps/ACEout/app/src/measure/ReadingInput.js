@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import { color, font, radius } from '../theme';
 import { validateReading, decimalsFor } from './leastCount';
+import { recordReading } from './telemetry';
 
 /**
  * The only way a measurement enters the app. Every value is checked against
@@ -79,9 +80,13 @@ export default function ReadingInput({
           <Pressable
             onPress={() => {
               setTouched(true);
+              // An invalid press still reaches here (the button only looks
+              // disabled) so telemetry can log the rejected attempt; it never
+              // commits.
+              recordReading({ label: label || instrument?.name, ok: Boolean(result?.ok) && !extraError });
               if (result?.ok) onCommit(result.value, result);
             }}
-            disabled={committed || !result?.ok}
+            disabled={committed || !value}
             style={({ pressed }) => [
               styles.commit,
               (!result?.ok || committed) && { opacity: 0.3 },

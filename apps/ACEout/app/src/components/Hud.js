@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { color, font, radius, bevel, space } from '../theme';
 import { useAppState } from '../store/AppState';
 import { initialsOf } from '../store/user';
+import { useOrg } from '../store/OrgState';
 
 /**
  * The strip under the status bar: who you are, how long you have kept it up,
@@ -10,11 +11,14 @@ import { initialsOf } from '../store/user';
  */
 export default function Hud({ navigation }) {
   const { user, stats, game, level } = useAppState();
+  const { isOrg, session } = useOrg();
+  // An org student may never have made a guest profile.
+  const name = user?.name || (isOrg ? session?.user?.name : '');
 
   return (
     <View style={styles.bar}>
       <Pressable style={styles.avatar} onPress={() => navigation.navigate('Profile')}>
-        <Text style={styles.avatarText}>{initialsOf(user?.name)}</Text>
+        <Text style={styles.avatarText}>{initialsOf(name)}</Text>
       </Pressable>
 
       <View style={styles.spacer} />

@@ -28,17 +28,19 @@ export const LATE_PENALTY = 10;
 export function computeAutoScore(attempt, observationCount, requiredObservations, dueAt) {
   const required = Math.max(1, requiredObservations || 1);
 
-  const quizRatio =
-    attempt.quizTotal && attempt.quizTotal > 0
-      ? (attempt.quizScore || 0) / attempt.quizTotal
-      : 0;
-  const quizPoints = WEIGHTS.quiz * quizRatio;
+  // With no quiz attached, the quiz's share is spread over the other two
+  // parts in proportion, so the attempt is still marked out of 100.
+  const hasQuiz = Boolean(attempt.quizTotal && attempt.quizTotal > 0);
+  const scale = hasQuiz ? 1 : 100 / (WEIGHTS.observations + WEIGHTS.completion);
+
+  const quizRatio = hasQuiz ? (attempt.quizScore || 0) / attempt.quizTotal : 0;
+  const quizPoints = hasQuiz ? WEIGHTS.quiz * quizRatio : 0;
 
   const obsRatio = Math.min(1, observationCount / required);
-  const observationPoints = WEIGHTS.observations * obsRatio;
+  const observationPoints = WEIGHTS.observations * scale * obsRatio;
 
   const submitted = attempt.status === "SUBMITTED";
-  const completionPoints = submitted ? WEIGHTS.completion : 0;
+  const completionPoints = submitted ? WEIGHTS.completion * scale : 0;
 
   const isLate = Boolean(
     submitted && dueAt && attempt.submittedAt && new Date(attempt.submittedAt) > new Date(dueAt),
@@ -57,7 +59,8 @@ export function computeAutoScore(attempt, observationCount, requiredObservations
       observationPoints: round1(observationPoints),
       observationCount,
       requiredObservations: required,
-      completionPoints,
+      completionPoints: round1(completionPoints),
+      hasQuiz,
       latePenalty,
       isLate,
     },
