@@ -57,7 +57,7 @@ app.use((_req, res) => {
 
 app.use((err, _req, res, _next) => {
   console.error("Server error:", err);
-  // Prisma unique-constraint violation
+  
   if (err.code === "P2002") {
     return res.status(409).json({ error: "That record already exists" });
   }
