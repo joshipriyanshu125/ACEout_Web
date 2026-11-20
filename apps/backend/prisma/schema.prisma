@@ -1,62 +1,108 @@
-// ACEout Virtual Lab — data model
-// Teachers own classes, unlock labs for a class as the syllabus progresses,
-// and review auto-scored student attempts.
+// ACEout — data model
+//
+// One school. A class is a grade + section ("11-A") with one section teacher.
+// Admins assign labs that already exist in the mobile app to sections,
+// students complete them on their phones, and every completion is recorded
+// here so the admin panel can show who has done what.
+//
+// Quizzes come in two kinds: AFTER_LAB (the default quiz attached to a lab,
+// shown as soon as a student clears the bench) and LIVE (hosted by a teacher;
+// students join with a code from the app).
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           String  @id @default(cuid())
-  name         String
-  email        String  @unique
-  passwordHash String
-  role         String  @default("STUDENT") // STUDENT | TEACHER | ADMIN
-  grade        String?
-  board        String?
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+  PRINCIPAL
+}
 
-  // Gamification carried over from the original student app
-  xp               Int @default(0)
-  streak           Int @default(0)
-  bestStreak       Int @default(0)
-  sessionsThisWeek Int @default(0)
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+}
+
+enum QuizMode {
+  LIVE
+  AFTER_LAB
+}
+
+enum QuizStatus {
+  DRAFT
+  READY
+  DONE
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+  NUMERIC
+}
+
+enum SessionStatus {
+  LOBBY
+  QUESTION
+  REVEAL
+  DONE
+}
+
+model User {
+  id           String @id @default(cuid())
+  name         String
+  email        String @unique
+  passwordHash String
+  role         Role   @default(STUDENT)
+  rollNo       Int?
+
+  xp           Int       @default(0)
+  streak       Int       @default(0)
+  lastActiveAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  teachingClasses Class[]      @relation("ClassTeacher")
+  teachingClasses Class[]           @relation("SectionTeacher")
   enrollments     Enrollment[]
-  attempts        LabAttempt[] @relation("AttemptStudent")
-  gradedAttempts  LabAttempt[] @relation("AttemptGrader")
-  unlocksMade     LabUnlock[]  @relation("UnlockAuthor")
+  attempts        LabAttempt[]      @relation("AttemptStudent")
+  gradedAttempts  LabAttempt[]      @relation("AttemptGrader")
+  assignmentsMade Assignment[]      @relation("AssignmentAuthor")
+  quizzesMade     Quiz[]            @relation("QuizAuthor")
+  hostedSessions  QuizSession[]     @relation("SessionHost")
+  participations  QuizParticipant[]
+  quizAnswers     QuizAnswer[]
 
   @@index([role])
 }
 
+/// One section of one grade, e.g. Class 11 · Section A.
 model Class {
   id       String  @id @default(cuid())
-  name     String
-  subject  String  @default("physics")
-  grade    String
+  grade    Int
+  section  String
   board    String  @default("CBSE")
   joinCode String  @unique
   archived Boolean @default(false)
 
-  teacherId String
-  teacher   User   @relation("ClassTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherId String?
+  teacher   User?   @relation("SectionTeacher", fields: [teacherId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   enrollments Enrollment[]
-  unlocks     LabUnlock[]
+  assignments Assignment[]
   attempts    LabAttempt[]
+  audiences   QuizAudience[]
 
+  @@unique([grade, section])
   @@index([teacherId])
 }
 
@@ -73,66 +119,49 @@ model Enrollment {
   @@index([studentId])
 }
 
+/// A bench that exists in the mobile app. `id` is the app's own lab id
+/// (e.g. "incline-work-energy") so the phone can open it directly.
 model Lab {
-  id              String   @id // slug, e.g. "pendulum-1"
-  title           String
-  subject         String
-  grade           String
-  durationMinutes Int
-  difficulty      String
-  description     String
-  benchType       String // pendulum | sound | caliper — drives the VirtualBench sim
-  tags            Json     @default("[]")
-  orderIndex      Int      @default(0)
-  isReady         Boolean  @default(true)
-
-  // Minimum readings a student must log for full observation credit
-  requiredObservations Int @default(3)
+  id                   String @id
+  title                String
+  subject              String // Physics | Chemistry | Biology | Space
+  grade                Int
+  chapterNo            String // the Roman numeral the app files it under
+  unit                 String
+  durationMinutes      Int
+  steps                Int
+  difficulty           String
+  abbr                 String
+  description          String
+  skills               Json   @default("[]")
+  requiredObservations Int    @default(3)
+  orderIndex           Int    @default(0)
 
   createdAt DateTime @default(now())
 
-  questions QuizQuestion[]
-  unlocks   LabUnlock[]
-  attempts  LabAttempt[]
+  assignments Assignment[]
+  attempts    LabAttempt[]
+  quizzes     Quiz[]
 
   @@index([orderIndex])
 }
 
-model QuizQuestion {
-  id              String   @id @default(cuid())
-  labId           String
-  number          Int
-  title           String
-  subtitle        String
-  instrumentType  String
-  displayValue    String
-  leastCount      String
-  options         Json     @default("[]")
-  correctIndex    Int
-  hintTitle       String
-  hintDescription String
-  explanation     String
-
-  lab       Lab            @relation(fields: [labId], references: [id], onDelete: Cascade)
-  responses QuizResponse[]
-
-  @@unique([labId, number])
-}
-
-/// A lab made available to one class. Absence of a row means the lab is locked.
-model LabUnlock {
+/// A lab assigned to one section. No open row = not assigned. Unassigning
+/// sets `closedAt` so submitted work and history survive.
+model Assignment {
   id      String @id @default(cuid())
   classId String
   labId   String
 
-  unlockedAt DateTime  @default(now())
-  /// Optional deadline — the "time slot" after which the teacher reviews results.
-  dueAt      DateTime?
-  /// Set when the teacher re-locks; keeps the history instead of deleting.
-  closedAt   DateTime?
+  assignedAt   DateTime  @default(now())
+  dueAt        DateTime?
+  closedAt     DateTime?
+  hintLevel    String    @default("STANDARD") // GUIDED | STANDARD | EXAM
+  attachQuiz   Boolean   @default(true)
+  allowOffline Boolean   @default(true)
 
-  unlockedById String?
-  unlockedBy   User?   @relation("UnlockAuthor", fields: [unlockedById], references: [id], onDelete: SetNull)
+  assignedById String?
+  assignedBy   User?   @relation("AssignmentAuthor", fields: [assignedById], references: [id], onDelete: SetNull)
 
   class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
   lab   Lab   @relation(fields: [labId], references: [id], onDelete: Cascade)
@@ -141,25 +170,30 @@ model LabUnlock {
   @@index([classId])
 }
 
-/// One student's work on one lab within one class.
+/// One student's work on one lab within one section.
 model LabAttempt {
   id        String @id @default(cuid())
   studentId String
   labId     String
   classId   String
 
-  status      String   @default("IN_PROGRESS") // IN_PROGRESS | SUBMITTED
-  startedAt   DateTime @default(now())
-  submittedAt DateTime?
-  /// Accumulated active time on the bench, in seconds.
-  timeSpentSeconds Int @default(0)
+  status           AttemptStatus @default(IN_PROGRESS)
+  startedAt        DateTime      @default(now())
+  submittedAt      DateTime?
+  timeSpentSeconds Int           @default(0)
 
-  quizScore Int? // correct answers
+  /// Share of typed readings accepted on the first try, 0–100. Null when the
+  /// bench takes no typed readings.
+  precision  Float?
+  faults     Int    @default(0)
+  /// Step labels where a reading was rejected, one entry per fault.
+  faultSteps Json   @default("[]")
+  xpEarned   Int    @default(0)
+
+  quizScore Int?
   quizTotal Int?
 
-  /// 0–100, computed by the scoring engine from quiz + observations + completion.
   autoScore     Float?
-  /// Teacher's manual replacement for autoScore. Wins when present.
   overrideScore Float?
   teacherRemark String?
   gradedAt      DateTime?
@@ -170,8 +204,8 @@ model LabAttempt {
   lab      Lab   @relation(fields: [labId], references: [id], onDelete: Cascade)
   class    Class @relation(fields: [classId], references: [id], onDelete: Cascade)
 
-  observations  Observation[]
-  quizResponses QuizResponse[]
+  observations Observation[]
+  quizAnswers  QuizAnswer[]
 
   @@unique([studentId, labId, classId])
   @@index([classId, labId])
@@ -182,7 +216,6 @@ model Observation {
   id              String   @id @default(cuid())
   attemptId       String
   experimentTitle String
-  /// Key/value readings taken at the virtual bench.
   readings        Json
   notes           String   @default("")
   createdAt       DateTime @default(now())
@@ -192,16 +225,119 @@ model Observation {
   @@index([attemptId])
 }
 
-model QuizResponse {
+model Quiz {
+  id              String     @id @default(cuid())
+  title           String
+  mode            QuizMode
+  status          QuizStatus @default(READY)
+  /// AFTER_LAB quizzes belong to a lab; a LIVE quiz may link one for context.
+  labId           String?
+  shuffle         Boolean    @default(true)
+  showLeaderboard Boolean    @default(true)
+  reportsSentAt   DateTime?
+
+  createdById String?
+  createdBy   User?   @relation("QuizAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+  lab         Lab?    @relation(fields: [labId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  questions QuizQuestion[]
+  audiences QuizAudience[]
+  sessions  QuizSession[]
+  answers   QuizAnswer[]
+
+  @@index([labId])
+}
+
+model QuizAudience {
+  quizId  String
+  classId String
+
+  quiz  Quiz  @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@id([quizId, classId])
+}
+
+model QuizQuestion {
+  id           String       @id @default(cuid())
+  quizId       String
+  number       Int
+  text         String
+  type         QuestionType @default(MCQ)
+  /// MCQ / TRUE_FALSE: option labels. NUMERIC: one entry, the expected answer.
+  options      Json         @default("[]")
+  correctIndex Int          @default(0)
+  explanation  String       @default("")
+  seconds      Int          @default(20)
+  points       Int          @default(100)
+
+  quiz    Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers QuizAnswer[]
+
+  @@unique([quizId, number])
+}
+
+/// A live run of a LIVE quiz. Students join with `code`; host and phones poll.
+model QuizSession {
+  id                String        @id @default(cuid())
+  quizId            String
+  code              String        @unique
+  status            SessionStatus @default(LOBBY)
+  currentIndex      Int           @default(0)
+  questionStartedAt DateTime?
+  startedAt         DateTime      @default(now())
+  endedAt           DateTime?
+
+  hostId String?
+  host   User?   @relation("SessionHost", fields: [hostId], references: [id], onDelete: SetNull)
+  quiz   Quiz    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+
+  participants QuizParticipant[]
+  answers      QuizAnswer[]
+
+  @@index([quizId])
+}
+
+model QuizParticipant {
+  id        String   @id @default(cuid())
+  sessionId String
+  studentId String
+  points    Int      @default(0)
+  joinedAt  DateTime @default(now())
+
+  session QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  student User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+}
+
+/// One student's answer to one question — from a live session, or from the
+/// post-lab quiz of a lab attempt.
+model QuizAnswer {
   id            String   @id @default(cuid())
-  attemptId     String
+  quizId        String
   questionId    String
-  selectedIndex Int
+  studentId     String
+  sessionId     String?
+  attemptId     String?
+  selectedIndex Int?
+  value         String?
   isCorrect     Boolean
+  points        Int      @default(0)
+  msTaken       Int?
   answeredAt    DateTime @default(now())
 
-  attempt  LabAttempt   @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  quiz     Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
   question QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  student  User         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  session  QuizSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  attempt  LabAttempt?  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
 
-  @@unique([attemptId, questionId])
+  @@index([quizId])
+  @@index([studentId])
+  @@index([sessionId])
+  @@index([attemptId])
 }

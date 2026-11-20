@@ -56,3 +56,14 @@ export function requireRole(...roles) {
     next();
   };
 }
+
+/** Staff who may view the admin panel. Principals are read-only. */
+export const STAFF_ROLES = ["ADMIN", "TEACHER", "PRINCIPAL"];
+
+/** Blocks writes for read-only roles. Use after requireAuth. */
+export function requireWrite(req, res, next) {
+  if (req.user?.role === "PRINCIPAL") {
+    return res.status(403).json({ error: "Your account is read-only" });
+  }
+  next();
+}

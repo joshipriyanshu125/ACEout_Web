@@ -8,6 +8,7 @@ import { findLabMeta } from '../data/catalog';
 import { describeWhen } from '../store/progress';
 import { BOARDS, CLASS_OPTIONS, initialsOf, cleanName, isValidName } from '../store/user';
 import { useAppState } from '../store/AppState';
+import { useOrg } from '../store/OrgState';
 import { BADGES, earnedBadges, totalStars, starsFor } from '../store/game';
 import { LANGS, useLanguage, Text } from '../i18n';
 
@@ -16,6 +17,8 @@ export default function ProfileScreen({ navigation }) {
   const { user, progress, stats, game, level, saveProfile, resetProgress, signOut } =
     useAppState();
   const { lang, setLang, t } = useLanguage();
+  const { isOrg, session, signOut: orgSignOut } = useOrg();
+  const shownName = user?.name || (isOrg ? session?.user?.name : '');
   const [editingName, setEditingName] = useState(false);
   const [draftName, setDraftName] = useState(user?.name || '');
   const [openRow, setOpenRow] = useState(null);
@@ -38,6 +41,17 @@ export default function ProfileScreen({ navigation }) {
       onConfirm: () => resetProgress(),
     });
 
+  const confirmOrgSignOut = () =>
+    confirm({
+      title: 'Sign out of your school?',
+      message: 'Your guest progress on this phone stays as it is.',
+      confirmLabel: 'Sign out',
+      onConfirm: async () => {
+        await orgSignOut();
+        navigation.reset({ index: 0, routes: [{ name: 'Splash' }] });
+      },
+    });
+
   const confirmSignOut = () =>
     confirm({
       title: 'Start over?',
@@ -54,7 +68,7 @@ export default function ProfileScreen({ navigation }) {
       <View style={styles.header}>
         <View>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{initialsOf(user?.name)}</Text>
+            <Text style={styles.avatarText}>{initialsOf(shownName)}</Text>
           </View>
           <View style={styles.levelChip}>
             <Text style={styles.levelChipText}>Lv {level.level}</Text>
@@ -84,7 +98,7 @@ export default function ProfileScreen({ navigation }) {
               }}
             >
               <Text style={styles.name} numberOfLines={1}>
-                {user?.name || 'Your name'}
+                {shownName || 'Your name'}
               </Text>
             </Pressable>
           )}
@@ -202,6 +216,33 @@ export default function ProfileScreen({ navigation }) {
               setOpenRow(null);
             }}
           />
+        </View>
+
+        <View style={{ gap: 4 }}>
+          <Text style={styles.sectionTitle}>School / College</Text>
+          {isOrg ? (
+            <>
+              <View style={styles.setting}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.settingLabel}>{session?.school || 'Your school'}</Text>
+                  <Text style={styles.settingNote}>
+                    {session?.class?.name || 'No class yet'} · {session?.user?.email}
+                  </Text>
+                </View>
+              </View>
+              <GhostButton label="Sign out of school" onPress={confirmOrgSignOut} />
+            </>
+          ) : (
+            <Pressable style={styles.setting} onPress={() => navigation.navigate('OrgLogin')}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.settingLabel}>Sign in to your school</Text>
+                <Text style={styles.settingNote}>
+                  Get assigned labs and marks. Your guest progress stays on this phone.
+                </Text>
+              </View>
+              <Text style={[styles.settingValue, { color: color.blueDeep }]}>→</Text>
+            </Pressable>
+          )}
         </View>
 
         <View style={{ gap: 10 }}>

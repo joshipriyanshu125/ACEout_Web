@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback, useState, useEffect } from 'react';
+import React, { Suspense, lazy, useCallback, useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text, useLanguage, hasKey } from '../i18n';
@@ -8,6 +8,8 @@ import { getChapters } from '../data/catalog';
 import { useAppState } from '../store/AppState';
 import { isVoiceEnabled, checkOnline } from '../voice';
 import VoiceOverlay from '../voice/VoiceOverlay';
+import { beginRun, snapshot } from '../measure/telemetry';
+import { buildSubmission } from '../org/readings';
 
 /**
  * The benches, loaded when one is opened rather than when the app starts.
@@ -35,7 +37,9 @@ const REGISTRY = {
 };
 
 export default function LabScreen({ navigation, route }) {
-  const { labId, title, cls, subject, chapterNo } = route.params;
+  // `assignment` is only present in School/College mode (from the org
+  // dashboard): { labId, title, quiz, hintLevel, allowOffline }.
+  const { labId, title, cls, subject, chapterNo, assignment } = route.params;
   const Lab = REGISTRY[labId];
   const { completeLab } = useAppState();
   const { t } = useLanguage();
@@ -59,8 +63,17 @@ export default function LabScreen({ navigation, route }) {
   // out. A lab that never calls it keeps the bar, which is the old behaviour.
   const [chrome, setChrome] = useState(true);
 
+  // Telemetry for the school submission: fresh counters and a start time each
+  // time a bench opens.
+  const startedAt = useRef(Date.now());
+  useEffect(() => {
+    beginRun();
+    startedAt.current = Date.now();
+  }, []);
+
   // Voice AI: check connectivity so the "Ask AI" button only appears online.
-  const hasVoice = isVoiceEnabled(labId);
+  // An assignment set to EXAM hint level takes the assistant away.
+  const hasVoice = isVoiceEnabled(labId) && assignment?.hintLevel !== 'EXAM';
   const [isOnline, setIsOnline] = useState(false);
   useEffect(() => {
     if (!hasVoice) return;
@@ -93,6 +106,34 @@ export default function LabScreen({ navigation, route }) {
       });
     },
     [navigation, labId, title, cls, subject, chapterNo]
+  );
+
+  /**
+   * School/College: the local record above still banks XP and stars; then the
+   * post-lab quiz if the assignment has one, otherwise straight to submit.
+   */
+  const toOrg = useCallback(
+    (result) => {
+      const completedAt = Date.now();
+      const base = buildSubmission({
+        result,
+        telemetry: snapshot(),
+        startedAt: startedAt.current,
+        completedAt,
+      });
+      const shownName = assignment.title || title;
+      if (assignment.quiz?.questions?.length) {
+        navigation.replace('PostLabQuiz', { assignment, title: shownName, base });
+      } else {
+        navigation.replace('OrgResult', {
+          labId: assignment.labId || labId,
+          title: shownName,
+          payload: { ...base, answers: [] },
+          allowOffline: assignment.allowOffline,
+        });
+      }
+    },
+    [navigation, assignment, labId, title]
   );
 
   return (
@@ -129,7 +170,8 @@ export default function LabScreen({ navigation, route }) {
             onComplete={async (result) => {
               setFinished(true);
               const award = await completeLab(labId, result, { title, cls, subject, chapterNo });
-              toResult(award);
+              if (assignment) toOrg(result);
+              else toResult(award);
             }}
           />
         </Suspense>

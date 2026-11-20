@@ -1,10 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import { color, font } from '../theme';
-import { Page, GoldButton } from '../components/ui';
+import { Page, GoldButton, ChunkyButton } from '../components/ui';
 import LogoMark from '../brand/LogoMark';
+import { useAppState } from '../store/AppState';
+import { useOrg } from '../store/OrgState';
 
 export default function SplashScreen({ navigation }) {
+  const { user } = useAppState();
+  const { setMode } = useOrg();
   const spin = useRef(new Animated.Value(0)).current;
 
   // The mark is a vortex, so it turns. Slowly — one revolution every half
@@ -44,7 +48,25 @@ export default function SplashScreen({ navigation }) {
       </View>
 
       <View style={styles.bottom}>
-        <GoldButton label="Start" onPress={() => navigation.navigate('Onboarding')} />
+        {/* Guest is the offline path, exactly as before: onboarding, then the
+            catalogue. A guest who already onboarded (e.g. back from a school
+            sign-out) goes straight to their own Learn tab. */}
+        <GoldButton
+          label="Start as guest"
+          onPress={() => {
+            setMode('guest');
+            if (user) navigation.reset({ index: 0, routes: [{ name: 'Subjects' }] });
+            else navigation.navigate('Onboarding');
+          }}
+        />
+        <ChunkyButton
+          label="School / College"
+          tone={color.blue}
+          onPress={() => navigation.navigate('OrgLogin')}
+        />
+        <Text style={styles.signin}>
+          Your school gave you a login or a class code? Pick School / College.
+        </Text>
         {/* <Text style={styles.signin}>
           Already enrolled? <Text style={styles.signinLink}>Sign in</Text>
         </Text> */}
@@ -72,7 +94,7 @@ const styles = StyleSheet.create({
     color: color.inkMuted,
     maxWidth: 260,
   },
-  bottom: { gap: 16, paddingBottom: 38, flexDirection: 'column' },
+  bottom: { gap: 12, paddingBottom: 38, flexDirection: 'column' },
   signin: {
     textAlign: 'center',
     fontFamily: font.regular,

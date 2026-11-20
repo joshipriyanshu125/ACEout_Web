@@ -22,6 +22,8 @@ import {
 import { color } from './src/theme';
 import { lockPortrait } from './src/utils/orientation';
 import { AppStateProvider, useAppState } from './src/store/AppState';
+import { OrgStateProvider, useOrg } from './src/store/OrgState';
+import { navigationRef } from './src/navigation';
 import { LanguageProvider } from './src/i18n';
 import SplashScreen from './src/screens/SplashScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
@@ -34,6 +36,11 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import QuestsScreen from './src/screens/QuestsScreen';
 import CompleteScreen from './src/screens/CompleteScreen';
 import VoiceAssistantScreen from './src/voice/VoiceAssistantScreen';
+import OrgLoginScreen from './src/screens/org/OrgLoginScreen';
+import OrgDashboardScreen from './src/screens/org/OrgDashboardScreen';
+import PostLabQuizScreen from './src/screens/org/PostLabQuizScreen';
+import OrgResultScreen from './src/screens/org/OrgResultScreen';
+import LiveQuizScreen from './src/screens/org/LiveQuizScreen';
 
 SplashScreenApi.preventAutoHideAsync().catch(() => {});
 
@@ -47,15 +54,19 @@ const navTheme = {
 export default function App() {
   return (
     <AppStateProvider>
-      <LanguageProvider>
-        <Root />
-      </LanguageProvider>
+      <OrgStateProvider>
+        <LanguageProvider>
+          <Root />
+        </LanguageProvider>
+      </OrgStateProvider>
     </AppStateProvider>
   );
 }
 
 function Root() {
-  const { ready, user } = useAppState();
+  const { ready: guestReady, user } = useAppState();
+  const { ready: orgReady, isOrg } = useOrg();
+  const ready = guestReady && orgReady;
 
   /**
    * Only the faces the first screen actually needs are allowed to hold up the
@@ -100,9 +111,9 @@ function Root() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <NavigationContainer theme={navTheme} onReady={onReady}>
+      <NavigationContainer ref={navigationRef} theme={navTheme} onReady={onReady}>
         <Stack.Navigator
-          initialRouteName={user ? 'Subjects' : 'Splash'}
+          initialRouteName={isOrg ? 'OrgDashboard' : user ? 'Subjects' : 'Splash'}
           screenOptions={{ headerShown: false, contentStyle: { backgroundColor: color.screen } }}
         >
           <Stack.Screen name="Splash" component={SplashScreen} />
@@ -116,6 +127,11 @@ function Root() {
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="Quests" component={QuestsScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="OrgLogin" component={OrgLoginScreen} />
+          <Stack.Screen name="OrgDashboard" component={OrgDashboardScreen} />
+          <Stack.Screen name="PostLabQuiz" component={PostLabQuizScreen} />
+          <Stack.Screen name="OrgResult" component={OrgResultScreen} />
+          <Stack.Screen name="LiveQuiz" component={LiveQuizScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

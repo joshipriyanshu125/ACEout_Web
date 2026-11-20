@@ -6,6 +6,7 @@ import TabBar from '../components/TabBar';
 import Hud from '../components/Hud';
 import { SUBJECTS, findLabMeta, SEARCH_INDEX } from '../data/catalog';
 import { useAppState } from '../store/AppState';
+import { useOrg } from '../store/OrgState';
 
 /**
  * The Learn tab: your level, what you were last on, and the four worlds.
@@ -13,7 +14,10 @@ import { useAppState } from '../store/AppState';
  */
 export default function SubjectsScreen({ navigation }) {
   const { user, stats, level, progress } = useAppState();
-  const cls = user?.cls || '11';
+  const { isOrg, session } = useOrg();
+  // A school student without a guest profile browses their own class.
+  const orgGrade = isOrg && session?.class?.grade ? String(session.class.grade) : null;
+  const cls = user?.cls || orgGrade || '11';
   const next = nextBench(progress, cls);
 
   return (

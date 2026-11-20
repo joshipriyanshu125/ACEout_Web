@@ -1,120 +1,196 @@
-import { useState, useEffect, useCallback } from "react";
-import { adminLogin, getInstitution } from "./services/api.js";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { api, getToken, setToken, setUnauthorizedHandler } from "./api.js";
+import { AppContext } from "./app-context.js";
+import { useRoute } from "./route.js";
+import { ROLE_LABELS, STAFF, STUDENT_REFUSAL } from "./lib/format.js";
+import { ErrorState, Loading } from "./ui/states.jsx";
+import { C, nu } from "./ui/theme.js";
+import Shell from "./screens/Shell.jsx";
+import Login from "./screens/Login.jsx";
+import Dashboard from "./screens/Dashboard.jsx";
+import Classes from "./screens/Classes.jsx";
+import StudentProfile from "./screens/StudentProfile.jsx";
+import Labs from "./screens/Labs.jsx";
+import LabReport from "./screens/LabReport.jsx";
+import Quizzes from "./screens/Quizzes.jsx";
+import QuizBuilder from "./screens/QuizBuilder.jsx";
+import LiveHost from "./screens/LiveHost.jsx";
+import QuizResults from "./screens/QuizResults.jsx";
+import AssignModal from "./screens/AssignModal.jsx";
 
-import { AdminSidebar } from "./components/AdminSidebar.jsx";
-import { AdminTopbar } from "./components/AdminTopbar.jsx";
-import { LoginPage } from "./components/LoginPage.jsx";
-import { OverviewPage } from "./components/OverviewPage.jsx";
-import { InstitutionSetupPage } from "./components/InstitutionSetupPage.jsx";
-import { TeacherManagementPage } from "./components/TeacherManagementPage.jsx";
-import { StudentRosterPage } from "./components/StudentRosterPage.jsx";
-import { AnalyticsPage } from "./components/AnalyticsPage.jsx";
-import { CurriculumPage } from "./components/CurriculumPage.jsx";
-import { SubscriptionPage } from "./components/SubscriptionPage.jsx";
-
-const PAGE_TITLES = {
-  overview: { title: "Overview", crumb: "Dashboard" },
-  institution: { title: "Institution Setup", crumb: "Settings / Institution" },
-  teachers: { title: "Teacher Management", crumb: "People / Teachers" },
-  students: { title: "Student Roster", crumb: "People / Students" },
-  analytics: { title: "Institution Analytics", crumb: "Insights / Analytics" },
-  curriculum: { title: "Curriculum & Board Config", crumb: "Academics / Curriculum" },
-  subscription: { title: "Subscription & Billing", crumb: "Settings / Billing" },
-};
 
 export default function App() {
-  const [session, setSession] = useState(() => {
-    try { return JSON.parse(sessionStorage.getItem("admin_session") || "null"); } catch { return null; }
-  });
-  const [institution, setInstitution] = useState(null);
-  const [view, setView] = useState("overview");
-  const [toast, setToast] = useState(null);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  // undefined = still checking a stored token; null = signed out.
+  const [session, setSession] = useState(getToken() ? undefined : null);
+  const [notice, setNotice] = useState("");
+  const [bootError, setBootError] = useState(null);
+  const [bootTry, setBootTry] = useState(0);
 
-  const notify = useCallback((message, type = "success") => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3500);
+  const logout = useCallback((message = "") => {
+    setToken(null);
+    setSession(null);
+    setNotice(message);
   }, []);
 
   useEffect(() => {
-    if (session?.admin?.institutionId) {
-      getInstitution(session.admin.institutionId)
-        .then((d) => setInstitution(d.institution))
-        .catch(() => {});
-    }
-  }, [session]);
+    setUnauthorizedHandler(() => logout("Your session has expired. Please sign in again."));
+  }, [logout]);
 
-  const handleLogin = async (email, password) => {
-    setLoginLoading(true);
-    setLoginError("");
-    try {
-      const data = await adminLogin(email, password);
-      const s = { admin: data.admin, institution: data.institution };
-      sessionStorage.setItem("admin_session", JSON.stringify(s));
-      setSession(s);
-      setInstitution(data.institution);
-    } catch (err) {
-      setLoginError(err.message || "Login failed");
-    } finally {
-      setLoginLoading(false);
-    }
-  };
+  // Restore a stored session.
+  useEffect(() => {
+    if (session !== undefined) return;
+    let alive = true;
+    api.me().then(
+      (d) => {
+        if (!alive) return;
+        if (!STAFF.includes(d.user?.role)) return logout(STUDENT_REFUSAL);
+        setSession({ user: d.user, school: d.school });
+      },
+      (e) => {
+        // 401 is handled by the unauthorized handler; anything else (server
+        // down, network) keeps the token so a retry can pick it back up.
+        if (alive && e.status !== 401) setBootError(e);
+      },
+    );
+    return () => {
+      alive = false;
+    };
+  }, [session, logout, bootTry]);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("admin_session");
-    setSession(null);
-    setInstitution(null);
-    setView("overview");
-  };
-
-  if (!session) {
-    return <LoginPage onLogin={handleLogin} loading={loginLoading} error={loginError} />;
+  if (session === undefined && bootError) {
+    return (
+      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: C.page, padding: 16 }}>
+        <div style={{ width: "min(440px, 100%)" }}>
+          <ErrorState
+            title="Can't open LabBench"
+            error={bootError}
+            onRetry={() => {
+              setBootError(null);
+              setBootTry((t) => t + 1);
+            }}
+          />
+        </div>
+      </div>
+    );
   }
 
-  const pageInfo = PAGE_TITLES[view] || PAGE_TITLES.overview;
+  if (session === undefined) {
+    return (
+      <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: C.page }}>
+        <Loading text="Opening LabBench…" />
+      </div>
+    );
+  }
 
-  const sharedProps = {
-    session,
-    institution,
-    onInstitutionUpdate: setInstitution,
-    onNotify: notify,
-    onNavigate: setView,
-  };
+  if (!session) {
+    return (
+      <Login
+        notice={notice}
+        onLogin={(d) => {
+          setToken(d.token);
+          setNotice("");
+          setSession({ user: d.user, school: d.school });
+        }}
+      />
+    );
+  }
 
-  const renderPage = () => {
-    switch (view) {
-      case "overview":     return <OverviewPage {...sharedProps} />;
-      case "institution":  return <InstitutionSetupPage {...sharedProps} />;
-      case "teachers":     return <TeacherManagementPage {...sharedProps} />;
-      case "students":     return <StudentRosterPage {...sharedProps} />;
-      case "analytics":    return <AnalyticsPage {...sharedProps} />;
-      case "curriculum":   return <CurriculumPage {...sharedProps} />;
-      case "subscription": return <SubscriptionPage {...sharedProps} />;
-      default:             return <OverviewPage {...sharedProps} />;
-    }
-  };
+  return <SignedIn session={session} logout={logout} />;
+}
+
+function SignedIn({ session, logout }) {
+  const route = useRoute();
+  const [version, setVersion] = useState(0);
+  const [toastState, setToastState] = useState(null);
+  const [assign, setAssign] = useState(null);
+  const toastTimer = useRef();
+
+  const toast = useCallback((message, kind = "success") => {
+    setToastState({ message, kind, id: Date.now() });
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToastState(null), kind === "error" ? 4200 : 2600);
+  }, []);
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+  const role = session.user.role;
+  const ctx = useMemo(
+    () => ({
+      user: session.user,
+      school: session.school,
+      role,
+      roleLabel: ROLE_LABELS[role] || role,
+      canEdit: role !== "PRINCIPAL",
+      logout: () => logout(""),
+      toast,
+      version,
+      refresh: () => setVersion((v) => v + 1),
+      openAssign: (opts) => setAssign(opts || {}),
+    }),
+    [session, role, logout, toast, version],
+  );
+
+  // New screen: start at the top.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [route.path]);
+
+  const [section] = route.parts;
+  const active = section === "students" ? "classes" : ["classes", "labs", "quizzes"].includes(section) ? section : "dashboard";
 
   return (
-    <div className="admin-shell">
-      <AdminSidebar
-        currentView={view}
-        onNavigate={setView}
-        admin={session.admin}
-        institution={institution}
-        onLogout={handleLogout}
-      />
-      <main className="admin-main">
-        <AdminTopbar title={pageInfo.title} breadcrumb={pageInfo.crumb} plan="School Plan" />
-        {renderPage()}
-      </main>
-
-      {toast && (
-        <div className={`toast toast-${toast.type}`}>
-          <span className="toast-icon">{toast.type === "success" ? "✓" : "✕"}</span>
-          {toast.message}
+    <AppContext.Provider value={ctx}>
+      <Shell active={active}>
+        {/* Keyed by path: every navigation remounts the screen and refetches. */}
+        <Screen key={route.path} route={route} />
+      </Shell>
+      {assign && ctx.canEdit && <AssignModal {...assign} onClose={() => setAssign(null)} />}
+      {toastState && (
+        <div
+          key={toastState.id}
+          role="status"
+          aria-live="polite"
+          className="no-print"
+          style={{
+            position: "fixed",
+            left: "50%",
+            bottom: 28,
+            transform: "translateX(-50%)",
+            background: toastState.kind === "error" ? C.red : C.green,
+            color: "#fff",
+            font: nu(800, 14),
+            padding: "14px 22px",
+            borderRadius: 14,
+            boxShadow: `0 5px 0 ${toastState.kind === "error" ? C.redD : C.greenD}`,
+            zIndex: 30,
+            maxWidth: "calc(100vw - 32px)",
+            textAlign: "center",
+            animation: "rise .2s ease-out",
+          }}
+        >
+          {toastState.message}
         </div>
       )}
-    </div>
+    </AppContext.Provider>
   );
+}
+
+function Screen({ route }) {
+  const [section, a, b, c] = route.parts;
+  switch (section) {
+    case "classes":
+      if (c) return <StudentProfile key={c} studentId={c} />;
+      return <Classes grade={a} classId={b} />;
+    case "students":
+      return <StudentProfile key={a} studentId={a} />;
+    case "labs":
+      return a ? <LabReport key={a} labId={a} classId={b || null} /> : <Labs />;
+    case "quizzes":
+      if (a === "new") return <QuizBuilder key="new" />;
+      if (a === "live" && b) return <LiveHost key={b} sessionId={b} />;
+      if (a && b === "edit") return <QuizBuilder key={a} quizId={a} />;
+      if (a && b === "results") return <QuizResults key={a + (c || "")} quizId={a} sessionId={c || null} />;
+      return <Quizzes />;
+    default:
+      return <Dashboard />;
+  }
 }
