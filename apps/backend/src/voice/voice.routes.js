@@ -1,22 +1,21 @@
-import 'dotenv/config';
 import express from 'express';
-import cors from 'cors';
 
 import { LAB_KNOWLEDGE } from './knowledge.js';
 
 /**
- * The voice proxy.
+ * The voice assistant (formerly the standalone voice proxy in apps/ACEout/server).
  *
  * Its only job is to hold the Deepgram and Gemini keys, which cannot live in
  * the app: `EXPO_PUBLIC_*` variables are inlined into the JS bundle at build
  * time, so a key shipped that way is readable by anyone who unzips the APK.
  * Both services bill per request.
  *
- * Three endpoints, mirroring the three network calls the assistant makes:
+ * Mounted at /api, mirroring the three network calls the assistant makes:
  *
  *   POST /api/stt   raw audio bytes  →  { text, confidence }
  *   POST /api/tts   { text }         →  audio/mpeg
  *   POST /api/ask   { labId, question } → { answer, sources }
+ *   GET  /api/voice/health           →  { ok, deepgram, gemini, labs }
  *
  * `/api/ask` deliberately does not take a prompt. The lab knowledge and the
  * system prompt live here, and `labId` is checked against the knowledge base —
@@ -24,7 +23,6 @@ import { LAB_KNOWLEDGE } from './knowledge.js';
  * a lab, not act as a free general-purpose LLM for whoever finds the URL.
  */
 
-const PORT = process.env.PORT || 3000;
 const DEEPGRAM_KEY = process.env.DEEPGRAM_API_KEY;
 const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
@@ -34,9 +32,7 @@ const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta';
 if (!DEEPGRAM_KEY) console.warn('⚠️  DEEPGRAM_API_KEY is not set — /api/stt and /api/tts will fail.');
 if (!GEMINI_KEY) console.warn('⚠️  GEMINI_API_KEY is not set — /api/ask will fail.');
 
-const app = express();
-app.use(cors());
-app.disable('x-powered-by');
+export const voiceRouter = express.Router();
 
 // ---------------------------------------------------------------------------
 // Rate limiting
@@ -81,7 +77,7 @@ setInterval(() => {
 // Health
 // ---------------------------------------------------------------------------
 
-app.get('/health', (req, res) => {
+voiceRouter.get('/voice/health', (req, res) => {
   res.json({
     ok: true,
     deepgram: Boolean(DEEPGRAM_KEY),
@@ -101,7 +97,7 @@ app.get('/health', (req, res) => {
  * rejects a type it does not recognise, and only the client knows whether
  * expo-av wrote MPEG-4 or the browser's MediaRecorder wrote WebM.
  */
-app.post('/api/stt', rateLimit, express.raw({ type: '*/*', limit: '25mb' }), async (req, res) => {
+voiceRouter.post('/stt', rateLimit, express.raw({ type: '*/*', limit: '25mb' }), async (req, res) => {
   if (!DEEPGRAM_KEY) return res.status(500).json({ error: 'Deepgram key not configured on the server.' });
   if (!req.body?.length) return res.status(400).json({ error: 'Empty audio body.' });
 
@@ -137,7 +133,7 @@ app.post('/api/stt', rateLimit, express.raw({ type: '*/*', limit: '25mb' }), asy
 // Text to speech
 // ---------------------------------------------------------------------------
 
-app.all('/api/tts', rateLimit, express.json({ limit: '64kb' }), async (req, res) => {
+voiceRouter.all('/tts', rateLimit, express.json({ limit: '64kb' }), async (req, res) => {
   if (!DEEPGRAM_KEY) return res.status(500).json({ error: 'Deepgram key not configured on the server.' });
 
   const rawText = req.body?.text || req.query?.text;
@@ -325,7 +321,7 @@ async function generate(prompt) {
   throw new Error(lastError);
 }
 
-app.post('/api/ask', rateLimit, express.json({ limit: '16kb' }), async (req, res) => {
+voiceRouter.post('/ask', rateLimit, express.json({ limit: '16kb' }), async (req, res) => {
   if (!GEMINI_KEY) return res.status(500).json({ error: 'Gemini key not configured on the server.' });
 
   const { labId, question } = req.body || {};
@@ -359,12 +355,4 @@ User Question: ${asked}`;
     console.error('Ask error:', err.message);
     res.status(502).json({ error: 'The assistant could not answer that right now.' });
   }
-});
-
-// ---------------------------------------------------------------------------
-
-app.use((req, res) => res.status(404).json({ error: 'Not found.' }));
-
-app.listen(PORT, () => {
-  console.log(`ACEout voice proxy listening on http://localhost:${PORT}`);
 });

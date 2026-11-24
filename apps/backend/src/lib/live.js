@@ -5,7 +5,7 @@
 // to REVEAL on the first read after its time runs out (or once everyone in
 // the room has answered), so the session advances even if the host is slow.
 
-import { prisma } from "./prisma.js";
+import { prisma } from "@repo/db";
 import { HttpError, initialsOf } from "./http.js";
 import { publicQuestion } from "./quiz.js";
 

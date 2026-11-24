@@ -34,7 +34,43 @@ const REGISTRY = {
   'gravity-launch': lazy(() => import('../labs/gravity_launch/GravityLaunchLab')),
   'plant-physiology': lazy(() => import('../labs/plant_physiology/PlantPhysiologyLab')),
   'eye-defects': lazy(() => import('../labs/ray_optics_eye/RayOpticsEyeLab')),
+  'newton-first-law': lazy(() => import('../labs/newton_laws/FirstLawLab')),
+  'newton-second-law': lazy(() => import('../labs/newton_laws/SecondLawLab')),
+  'newton-third-law': lazy(() => import('../labs/newton_laws/ThirdLawLab')),
+  'newtons-laws': lazy(() => import('../labs/newton_laws/NewtonLawsModule')),
 };
+
+class LabErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error('Lab Error caught by LabErrorBoundary:', error, info);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={styles.errorWrap}>
+          <Text style={styles.errorTitle}>The bench failed to load</Text>
+          <Text style={styles.errorDetail}>
+            {String(this.state.error?.message || this.state.error)}
+          </Text>
+          <Pressable
+            style={styles.errorRetry}
+            onPress={() => this.setState({ hasError: false, error: null })}
+          >
+            <Text style={styles.errorRetryText}>Reload Bench</Text>
+          </Pressable>
+        </View>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function LabScreen({ navigation, route }) {
   // `assignment` is only present in School/College mode (from the org
@@ -158,23 +194,25 @@ export default function LabScreen({ navigation, route }) {
       ) : null}
 
       {Lab ? (
-        <Suspense
-          fallback={
-            <View style={styles.loading}>
-              <ActivityIndicator color={color.brandInk} />
-            </View>
-          }
-        >
-          <Lab
-            onChrome={setChrome}
-            onComplete={async (result) => {
-              setFinished(true);
-              const award = await completeLab(labId, result, { title, cls, subject, chapterNo });
-              if (assignment) toOrg(result);
-              else toResult(award);
-            }}
-          />
-        </Suspense>
+        <LabErrorBoundary>
+          <Suspense
+            fallback={
+              <View style={styles.loading}>
+                <ActivityIndicator color={color.brandInk} />
+              </View>
+            }
+          >
+            <Lab
+              onChrome={setChrome}
+              onComplete={async (result) => {
+                setFinished(true);
+                const award = await completeLab(labId, result, { title, cls, subject, chapterNo });
+                if (assignment) toOrg(result);
+                else toResult(award);
+              }}
+            />
+          </Suspense>
+        </LabErrorBoundary>
       ) : (
         <View style={styles.missing}>
           <Text style={styles.missingText}>
@@ -269,6 +307,39 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 21,
     color: color.inkMuted,
+  },
+  errorWrap: {
+    flex: 1,
+    padding: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  errorTitle: {
+    fontFamily: font.displayBold,
+    fontSize: 18,
+    color: color.redDeep,
+    textAlign: 'center',
+  },
+  errorDetail: {
+    fontFamily: font.regular,
+    fontSize: 13,
+    color: color.inkBody,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  errorRetry: {
+    marginTop: 8,
+    backgroundColor: color.green,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: radius.pill,
+    ...bevel(color.greenDeep),
+  },
+  errorRetryText: {
+    fontFamily: font.bold,
+    fontSize: 14,
+    color: '#FFFFFF',
   },
 
   // Purple is the design system's prompt colour, and depth here is the same

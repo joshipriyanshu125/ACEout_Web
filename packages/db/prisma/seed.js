@@ -8,7 +8,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { computeAutoScore } from "../src/lib/scoring.js";
+import { computeAutoScore } from "../src/scoring.js";
 
 const prisma = new PrismaClient();
 
@@ -149,6 +149,67 @@ const LABS = [
     faultSteps: ["Near point reading", "Far point reading", "Parallax on the scale"],
     reading: () => ({ station: pick(["normal", "myopic", "hyper"]), readingCm: Number(between(18, 210).toFixed(1)) }),
   },
+  {
+    id: "newton-first-law",
+    title: "Newton's First Law: Law of Inertia",
+    subject: "Physics",
+    grade: 9,
+    chapterNo: "III",
+    unit: "Ch III · Force and Laws of Motion",
+    durationMinutes: 15,
+    steps: 5,
+    difficulty: "Beginner",
+    abbr: "F₁",
+    description:
+      "Demonstrate inertia of rest with the coin and glass experiment, and inertia of motion on a friction track.",
+    skills: ["Inertia of rest", "Inertia of motion"],
+    requiredObservations: 2,
+    faultSteps: ["Card flick speed", "Track friction setting", "Stopping distance"],
+    reading: () => ({ experiment: pick(["Coin and card", "Friction track"]), surface: pick(["Ice", "Wood", "Carpet"]), distanceCm: Number(between(20, 300).toFixed(1)) }),
+  },
+  {
+    id: "newton-second-law",
+    title: "Newton's Second Law: Force and Acceleration",
+    subject: "Physics",
+    grade: 9,
+    chapterNo: "III",
+    unit: "Ch III · Force and Laws of Motion",
+    durationMinutes: 18,
+    steps: 6,
+    difficulty: "Intermediate",
+    abbr: "F₂",
+    description:
+      "Verify F = m × a on a horizontal track by varying mass and applied force, plotting acceleration and net force.",
+    skills: ["F = m × a", "Graph + best fit"],
+    requiredObservations: 4,
+    faultSteps: ["Applied force", "Cart mass", "Measured acceleration"],
+    reading: () => {
+      const massKg = pick([1, 2, 4, 5]);
+      const forceN = pick([5, 10, 15, 20]);
+      return { massKg, forceN, accel: Number((forceN / massKg * between(0.9, 1.05)).toFixed(2)) };
+    },
+  },
+  {
+    id: "newton-third-law",
+    title: "Newton's Third Law: Action and Reaction",
+    subject: "Physics",
+    grade: 9,
+    chapterNo: "III",
+    unit: "Ch III · Force and Laws of Motion",
+    durationMinutes: 15,
+    steps: 5,
+    difficulty: "Intermediate",
+    abbr: "F₃",
+    description:
+      "Investigate action-reaction pairs in rocket propulsion, colliding carts with contact sensors, and swimming dynamics.",
+    skills: ["Action–reaction pairs", "Contact forces"],
+    requiredObservations: 3,
+    faultSteps: ["Sensor A force", "Sensor B force", "Thrust reading"],
+    reading: () => {
+      const f = Number(between(10, 150).toFixed(1));
+      return { scenario: pick(["Rocket", "Colliding carts", "Swimmer"]), actionN: f, reactionN: f };
+    },
+  },
 ];
 
 // Questions are written with the right answer first; rotating the options by
@@ -183,6 +244,27 @@ const NUM = (text, answer, explanation) => ({
 
 /** The default 5-question post-lab quiz for each bench. */
 const AFTER_LAB = {
+  "newton-first-law": [
+    T("Which law of motion is famously known as the Law of Inertia?", ["Newton's First Law", "Newton's Second Law", "Newton's Third Law", "Law of Universal Gravitation"], 0, "The First Law says a body keeps its state of rest or uniform motion unless an unbalanced force acts on it."),
+    T("When a card resting on a glass is flicked away quickly, the coin drops into the glass because of…", ["inertia of rest of the coin", "inertia of motion of the coin", "centripetal acceleration", "a lack of gravity"], 0, "The flick acts on the card; the coin resists horizontal motion and falls straight down."),
+    T("With no friction or resistance, a cart moving on a straight track will…", ["keep moving at constant velocity", "slow down and stop", "accelerate indefinitely", "reverse direction"], 0, "With no unbalanced force, velocity does not change."),
+    T("Which quantity is a direct measure of an object's inertia?", ["Mass", "Velocity", "Volume", "Weight"], 0, "A heavier body has more inertia and needs a larger force to change its motion."),
+    TF("A passenger lurches forward when a bus brakes suddenly because of inertia of motion.", true, "The upper body keeps moving forward while the lower body stops with the bus."),
+  ],
+  "newton-second-law": [
+    T("Net force doubles while mass stays the same. The acceleration…", ["doubles", "halves", "stays the same", "becomes zero"], 0, "a = F/m, so a scales with F."),
+    T("The same force acts on carts of 2 kg and 4 kg. The ratio a₁ : a₂ is…", ["2 : 1", "1 : 2", "1 : 4", "4 : 1"], 0, "a is inversely proportional to m: a₁/a₂ = 4/2."),
+    T("By Newton's Second Law, force is the rate of change of…", ["momentum", "velocity", "kinetic energy", "inertia"], 0, "F = dp/dt; for constant mass this becomes F = ma."),
+    NUM("A 5 kg cart has 25 N applied and 5 N of friction. What is its acceleration in m/s²?", 4, "Net force = 20 N, so a = 20 / 5 = 4 m/s²."),
+    T("One newton is equivalent to…", ["kg·m/s²", "kg·m/s", "kg·m²/s²", "J/s"], 0, "F = ma, so N = kg × m/s²."),
+  ],
+  "newton-third-law": [
+    T("Which law of motion explains rocket propulsion?", ["Newton's Third Law", "Newton's First Law", "Newton's Second Law", "None of these"], 0, "The rocket pushes exhaust down; the exhaust pushes the rocket up."),
+    TF("Action and reaction forces act on the same body and cancel each other.", false, "They act on two different bodies, so they never cancel."),
+    NUM("A swimmer pushes water back with 150 N. How many newtons does the water push the swimmer forward with?", 150, "Action and reaction are equal in magnitude."),
+    T("Two carts of different masses collide. Which feels the larger contact force?", ["Both feel equal and opposite forces", "The lighter cart", "The heavier cart", "The faster cart"], 0, "The Third Law holds regardless of mass."),
+    T("A gun recoils when a bullet is fired because…", ["the gases push the bullet forward and the gun backward", "air resistance stops the bullet", "gravity pulls the bullet", "of energy conservation alone"], 0, "The force on the bullet has an equal and opposite reaction on the gun."),
+  ],
   "incline-work-energy": [
     T("A block slides 0.80 m from rest in 1.00 s. What is its acceleration?", ["1.6 m/s²", "0.8 m/s²", "0.4 m/s²", "3.2 m/s²"], 0, "s = ½at², so a = 2s/t² = 1.6 m/s²."),
     T("On a frictionless incline at angle θ, the block accelerates at…", ["g sin θ", "g cos θ", "g tan θ", "g"], 0, "Only the component of gravity along the slope acts: g sin θ."),
@@ -291,6 +373,9 @@ const ASSIGNMENTS = [
   { labId: "gravity-launch", sections: ["11A"], due: 8, hint: "EXAM" },
   { labId: "eye-defects", sections: ["12A", "12B"], due: -2, hint: "STANDARD" },
   { labId: "eye-defects", sections: ["12C"], due: 6, hint: "GUIDED" },
+  { labId: "newton-first-law", sections: ["9A"], due: 4, hint: "GUIDED" },
+  { labId: "newton-second-law", sections: ["9A"], due: 9, hint: "STANDARD" },
+  { labId: "newton-third-law", sections: ["9A"], due: 14, hint: "STANDARD" },
 ];
 
 const PROFILES = {
@@ -300,6 +385,8 @@ const PROFILES = {
 };
 
 const DEMO_STUDENT_EMAIL = "student@aceout.dev";
+// Class 9 has one section with a single demo student so the grade-9 labs can be tried end to end.
+const DEMO_STUDENT_9_EMAIL = "student9@aceout.dev";
 
 async function main() {
   console.log("Clearing old data…");
@@ -366,6 +453,23 @@ async function main() {
       }
     }
   }
+
+  console.log("Class 9 demo…");
+  classes["9A"] = await prisma.class.create({
+    data: { grade: 9, section: "A", joinCode: "ACE9A", teacherId: teachers[0].id },
+  });
+  const student9 = await prisma.user.create({
+    data: {
+      name: "Ishaan Verma",
+      email: DEMO_STUDENT_9_EMAIL,
+      passwordHash: studentHash,
+      role: "STUDENT",
+      rollNo: 1,
+      lastActiveAt: new Date(),
+      enrollments: { create: { classId: classes["9A"].id, joinedAt: daysFromNow(-30) } },
+    },
+  });
+  roster["9A"] = [{ user: student9, profile: "strong", isDemo: true }];
 
   console.log("Post-lab quizzes…");
   const afterLabQuiz = {};
@@ -571,7 +675,8 @@ async function main() {
 Admin panel   admin@aceout.dev / admin123      (principal@aceout.dev / principal123 is read-only)
 Teacher       iyer@aceout.dev / teacher123
 Student app   ${DEMO_STUDENT_EMAIL} / student123   (Class 11 · A)
-Class codes   ACE10A … ACE12C`);
+              ${DEMO_STUDENT_9_EMAIL} / student123  (Class 9 · A)
+Class codes   ACE9A, ACE10A … ACE12C`);
 }
 
 main()

@@ -81,7 +81,7 @@ function QuizCard({ q }) {
   const [busy, setBusy] = useState(false);
   const [state, stateColor] = stateText(q);
   const mode = MODE[q.mode] || MODE.LIVE;
-  const canHost = app.canEdit && q.mode === "LIVE" && q.state !== "done";
+  const canHost = app.canEdit && q.mode === "LIVE";
   const canEdit = app.canEdit && q.state !== "live";
 
   async function host() {
@@ -123,7 +123,7 @@ function QuizCard({ q }) {
         </Button>
         {canHost && (
           <Button variant="dark" size="xs" busy={busy} onClick={host} style={{ flex: 1, padding: 10 }}>
-            {q.liveSessionId ? "Open host view" : "Host live"}
+            {q.liveSessionId ? "Open host view" : q.state === "done" ? "Run again" : "Host live"}
           </Button>
         )}
         {canEdit && (

@@ -200,6 +200,48 @@ export const CHAPTERS = {
     'Electricity',
     'Magnetic Effects of Electric Current',
   ]),
+  '9|physics': chapters([
+    'Matter in Our Surroundings',
+    'Motion',
+    {
+      title: 'Force and Laws of Motion',
+      labs: 3,
+      blurb:
+        "Master Newton's Three Laws of Motion with realistic 3D experiments: inertia of rest and motion, quantitative verification of F = m × a, and action-reaction pairs.",
+      virtualLabs: [
+        {
+          id: 'newton-first-law',
+          title: "Newton's First Law: Law of Inertia",
+          description:
+            'Demonstrate inertia of rest with the coin and glass experiment, and inertia of motion on a friction track.',
+          duration: '15 mins',
+          difficulty: 'Beginner',
+          ncertCode: 'PHY-09-CH-09',
+        },
+        {
+          id: 'newton-second-law',
+          title: "Newton's Second Law: Force and Acceleration",
+          description:
+            'Verify F = m × a on a horizontal track by varying mass and applied force, plotting acceleration and net force.',
+          duration: '18 mins',
+          difficulty: 'Intermediate',
+          ncertCode: 'PHY-09-CH-09',
+        },
+        {
+          id: 'newton-third-law',
+          title: "Newton's Third Law: Action and Reaction",
+          description:
+            'Investigate action-reaction pairs in rocket propulsion, colliding carts with contact sensors, and swimming dynamics.',
+          duration: '15 mins',
+          difficulty: 'Intermediate',
+          ncertCode: 'PHY-09-CH-09',
+        },
+      ],
+    },
+    'Gravitation',
+    'Work and Energy',
+    'Sound',
+  ]),
 };
 
 const GENERIC_CHAPTERS = chapters([
@@ -395,7 +437,49 @@ export const LABS = {
       ncertCode: 'BIO-11-CH-06/11',
     },
   ],
+  '9|physics|III': [
+    {
+      id: 'newton-first-law',
+      title: "Newton's First Law: Law of Inertia",
+      mins: 15,
+      desc:
+        'Demonstrate inertia of rest with the coin and glass experiment, and inertia of motion on a friction track.',
+      tag1: 'Inertia & Force',
+      tag2: '3D Simulation',
+      art: ART.sand,
+      built: true,
+      difficulty: 'Beginner',
+      ncertCode: 'PHY-09-CH-09',
+    },
+    {
+      id: 'newton-second-law',
+      title: "Newton's Second Law: Force and Acceleration",
+      mins: 18,
+      desc:
+        'Verify F = m × a on a horizontal track by varying mass and applied force, plotting acceleration and net force.',
+      tag1: 'F = m · a',
+      tag2: 'Live Calculations',
+      art: ART.slate,
+      built: true,
+      difficulty: 'Intermediate',
+      ncertCode: 'PHY-09-CH-09',
+    },
+    {
+      id: 'newton-third-law',
+      title: "Newton's Third Law: Action and Reaction",
+      mins: 15,
+      desc:
+        'Investigate action-reaction pairs in rocket propulsion, colliding carts with contact sensors, and swimming dynamics.',
+      tag1: 'Action & Reaction',
+      tag2: 'Opposite Pairs',
+      art: ART.sea,
+      built: true,
+      difficulty: 'Intermediate',
+      ncertCode: 'PHY-09-CH-09',
+    },
+  ],
 };
+LABS['9|physics|IX'] = LABS['9|physics|III'];
 
 export function getLabs(cls, subjectKey, chapterNo) {
   const built = LABS[`${cls}|${subjectKey}|${chapterNo}`];
@@ -536,6 +620,42 @@ export const SEARCH_INDEX = [
     built: true,
     keywords:
       'ph determination universal indicator paper strip digital ph meter probe h+ oh- hydronium acid base',
+  },
+  {
+    id: 'newton-first-law',
+    title: "Newton's First Law: Law of Inertia",
+    crumb: 'Class 9 · Physics · III',
+    cls: '9',
+    subject: 'physics',
+    chapterNo: 'III',
+    art: ART.sand,
+    built: true,
+    keywords:
+      'newton first law inertia rest motion coin card glass tumbler cart friction unbalanced force balanced forces galileo ncert class 9 force and laws of motion',
+  },
+  {
+    id: 'newton-second-law',
+    title: "Newton's Second Law: Force and Acceleration",
+    crumb: 'Class 9 · Physics · III',
+    cls: '9',
+    subject: 'physics',
+    chapterNo: 'III',
+    art: ART.slate,
+    built: true,
+    keywords:
+      'newton second law force mass acceleration f=ma momentum rate of change momentum net force friction graph best fit ncert class 9 force and laws of motion',
+  },
+  {
+    id: 'newton-third-law',
+    title: "Newton's Third Law: Action and Reaction",
+    crumb: 'Class 9 · Physics · III',
+    cls: '9',
+    subject: 'physics',
+    chapterNo: 'III',
+    art: ART.sea,
+    built: true,
+    keywords:
+      'newton third law action reaction rocket propulsion collision carts swimming equal opposite momentum conservation ncert class 9 force and laws of motion',
   },
 ];
 

@@ -13,7 +13,7 @@ if (Platform.OS !== 'web') {
 const DEEPGRAM_API_URL = 'https://api.deepgram.com/v1';
 
 /**
- * The voice proxy in `server/`, if one is configured.
+ * The voice routes in `apps/backend` (src/voice/), if one is configured.
  *
  * When it is, the app never sees an API key: it posts audio to `/api/stt` and
  * text to `/api/tts` and the proxy holds the credentials. When it is not, the
