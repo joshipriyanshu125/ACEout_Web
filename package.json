@@ -1,4 +1,3 @@
-
 {
   "name": "ACEout_Web",
   "private": true,
@@ -6,7 +5,13 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{js,jsx,json,md,css}\""
+    "format": "prettier --write \"**/*.{js,jsx,json,md,css}\"",
+    "db:generate": "npm run db:generate --workspace @repo/db",
+    "db:migrate": "npm run db:migrate --workspace @repo/db",
+    "db:deploy": "npm run db:deploy --workspace @repo/db",
+    "db:seed": "npm run db:seed --workspace @repo/db",
+    "db:reset": "npm run db:reset --workspace @repo/db",
+    "db:studio": "npm run db:studio --workspace @repo/db"
   },
   "devDependencies": {
     "prettier": "3.9.6",

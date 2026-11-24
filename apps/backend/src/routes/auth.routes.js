@@ -1,6 +1,12 @@
 import { Router } from "express";
-import { prisma } from "../lib/prisma.js";
-import { hashPassword, verifyPassword, signToken, publicUser, requireAuth } from "../lib/auth.js";
+import { prisma } from "@repo/db";
+import {
+  hashPassword,
+  verifyPassword,
+  signToken,
+  publicUser,
+  requireAuth,
+} from "../lib/auth.js";
 import { handle } from "../lib/http.js";
 
 export const authRouter = Router();
@@ -46,10 +52,14 @@ authRouter.post(
     const { name, email, password, joinCode } = req.body ?? {};
 
     if (!name || !email || !password || !joinCode) {
-      return res.status(400).json({ error: "Name, email, password and class code are required" });
+      return res
+        .status(400)
+        .json({ error: "Name, email, password and class code are required" });
     }
     if (String(password).length < 6) {
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
     }
 
     const klass = await prisma.class.findUnique({
@@ -61,10 +71,13 @@ authRouter.post(
 
     const normalisedEmail = String(email).trim().toLowerCase();
     if (await prisma.user.findUnique({ where: { email: normalisedEmail } })) {
-      return res.status(409).json({ error: "An account with this email already exists" });
+      return res
+        .status(409)
+        .json({ error: "An account with this email already exists" });
     }
 
-    const rollNo = (await prisma.enrollment.count({ where: { classId: klass.id } })) + 1;
+    const rollNo =
+      (await prisma.enrollment.count({ where: { classId: klass.id } })) + 1;
     const user = await prisma.user.create({
       data: {
         name: String(name).trim().slice(0, 60),
@@ -107,7 +120,12 @@ authRouter.get(
   requireAuth,
   handle(async (req, res) => {
     const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    // A valid token for a user that no longer exists (e.g. after a DB reset)
+    // is a dead session: 401 makes clients drop the token and show login.
+    if (!user)
+      return res
+        .status(401)
+        .json({ error: "Your session has expired. Please sign in again." });
     res.json({
       user: publicUser(user),
       school: SCHOOL_NAME,

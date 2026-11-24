@@ -4,9 +4,9 @@
 // sections they teach. PRINCIPAL is read-only.
 
 import { Router } from "express";
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "@repo/db";
 import { requireAuth, requireRole, requireWrite, STAFF_ROLES } from "../lib/auth.js";
-import { finalScore } from "../lib/scoring.js";
+import { finalScore } from "@repo/db/scoring";
 import { handle, HttpError, round1, pct, avg, initialsOf } from "../lib/http.js";
 import { cleanQuestion } from "../lib/quiz.js";
 import { makeSessionCode, hostView, transition } from "../lib/live.js";

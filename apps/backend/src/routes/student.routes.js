@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { prisma } from "../lib/prisma.js";
+import { prisma } from "@repo/db";
 import { requireAuth, requireRole } from "../lib/auth.js";
-import { computeAutoScore, finalScore } from "../lib/scoring.js";
+import { computeAutoScore, finalScore } from "@repo/db/scoring";
 import { handle, HttpError, round1 } from "../lib/http.js";
 import { gradeAnswer, livePoints, publicQuestion } from "../lib/quiz.js";
 import { studentView, freshSession } from "../lib/live.js";

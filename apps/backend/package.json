@@ -5,23 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "build": "prisma generate",
     "start": "node src/index.js",
     "lint": "eslint . --max-warnings 0",
-    "db:migrate": "prisma migrate dev",
-    "db:generate": "prisma generate",
-    "db:seed": "node prisma/seed.js",
-    "db:reset": "prisma migrate reset --force && node prisma/seed.js",
-    "db:studio": "prisma studio"
+    "sync-knowledge": "cp ../ACEout/app/src/voice/labKnowledge.js src/voice/knowledge.js"
   },
   "dependencies": {
-    "@prisma/client": "6.19.3",
+    "@repo/db": "*",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.3",
-    "prisma": "6.19.3"
+    "jsonwebtoken": "^9.0.3"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

@@ -10,3 +10,6 @@ export const prisma =
   });
 
 globalForPrisma.__aceoutPrisma = prisma;
+
+// Re-exported so apps never need their own @prisma/client dependency.
+export * from "@prisma/client";

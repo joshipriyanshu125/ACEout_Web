@@ -2,12 +2,14 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 
-import { prisma } from "./lib/prisma.js";
+import { prisma } from "@repo/db";
 import { authRouter } from "./routes/auth.routes.js";
 import { studentRouter } from "./routes/student.routes.js";
 import { adminRouter } from "./routes/admin.routes.js";
+import { voiceRouter } from "./voice/voice.routes.js";
 
 const app = express();
+app.disable("x-powered-by");
 const PORT = process.env.PORT || 5000;
 
 // The admin panel (Vite, :5174) and the app's web build (Expo, :8081) run on
@@ -49,6 +51,8 @@ app.get("/health", async (_req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/admin", adminRouter);
+// Voice assistant: /api/stt, /api/tts, /api/ask, /api/voice/health
+app.use("/api", voiceRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Endpoint not found" });
@@ -69,8 +73,19 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: "Something went wrong on the server" });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 ACEout Virtual Lab API running at http://localhost:${PORT}`);
   console.log(`   Health check: http://localhost:${PORT}/health`);
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `❌ Port ${PORT} is already in use — another backend instance is probably running.\n` +
+        `   Stop it (e.g. \`fuser -k ${PORT}/tcp\`) or set a different PORT in apps/backend/.env.`,
+    );
+    process.exit(1);
+  }
+  throw err;
 });
 

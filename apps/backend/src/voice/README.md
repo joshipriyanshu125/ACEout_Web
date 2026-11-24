@@ -1,6 +1,7 @@
-# ACEout voice proxy
+# ACEout voice assistant
 
-A small Express service that stands between the app and the two paid APIs the
+Part of `apps/backend` (it used to be a separate service in `apps/ACEout/server`).
+These routes stand between the app and the two paid APIs the
 voice assistant uses. Its only job is to hold the keys.
 
 It exists because `EXPO_PUBLIC_*` variables are **inlined into the JS bundle at
@@ -20,7 +21,7 @@ Both services bill per request, so that is someone else's usage on your card.
 | `POST /api/stt` | raw audio bytes | `{ text, confidence }` |
 | `POST /api/tts` | `{ text }` | `audio/mpeg` |
 | `POST /api/ask` | `{ labId, question }` | `{ answer, sources }` |
-| `GET /health` | — | `{ ok, deepgram, gemini, labs }` |
+| `GET /api/voice/health` | — | `{ ok, deepgram, gemini, labs }` |
 
 `/api/ask` takes a **lab id, not a prompt**. The system prompt and the lab
 knowledge live here, and `labId` is checked against the knowledge base — so the
@@ -33,17 +34,13 @@ for one instance; move it to Redis if you ever run two.
 
 ## Running it
 
-```bash
-cd server
-npm install
-cp .env.example .env    # then paste your two keys in
-npm start
-```
+Put `DEEPGRAM_API_KEY` and `GEMINI_API_KEY` in `apps/backend/.env` (see
+`.env.example`), then run the backend as usual (`npm run dev` from the repo root).
 
 Then point the app at it in `app/.env`:
 
 ```
-EXPO_PUBLIC_API_BASE_URL=http://localhost:3000
+EXPO_PUBLIC_API_BASE_URL=http://localhost:5000
 ```
 
 Restart Metro with `npx expo start --clear` after changing that — `EXPO_PUBLIC_*`
@@ -58,10 +55,10 @@ wrong to ship; delete the fallback in `app/src/voice/` once you deploy.
 `localhost` on a phone means the phone. Two things bite here:
 
 1. **Use your machine's LAN address**, not localhost:
-   `EXPO_PUBLIC_API_BASE_URL=http://192.168.1.42:3000` (find it with `hostname -I`).
+   `EXPO_PUBLIC_API_BASE_URL=http://192.168.1.42:5000` (find it with `hostname -I`).
 2. **Android blocks cleartext HTTP** in release builds since Android 9. A plain
    `http://` address will fail in the APK with no useful error. Either tunnel it
-   over https (`npx cloudflared tunnel --url http://localhost:3000`) or, for LAN
+   over https (`npx cloudflared tunnel --url http://localhost:5000`) or, for LAN
    testing only, add to `app/app.json`:
 
    ```json
@@ -72,8 +69,7 @@ wrong to ship; delete the fallback in `app/src/voice/` once you deploy.
 
 ## Deploying
 
-Any Node host works — set the root directory to `server`, build `npm install`,
-start `npm start`, and set `DEEPGRAM_API_KEY` and `GEMINI_API_KEY` as
+Any Node host works — deploy `apps/backend` as described in the root README, and set `DEEPGRAM_API_KEY` and `GEMINI_API_KEY` as
 environment variables in the dashboard. Then set `EXPO_PUBLIC_API_BASE_URL` to
 the deployed https URL and rebuild the APK.
 
@@ -84,9 +80,9 @@ warm, or ping `/health` on a schedule.
 
 ## Keeping the knowledge base in sync
 
-`knowledge.js` is a copy of `app/src/voice/labKnowledge.js`, so the server can
+`knowledge.js` is a copy of `apps/ACEout/app/src/voice/labKnowledge.js`, so the backend can
 deploy on its own without the app folder. After editing the app's copy:
 
 ```bash
-npm run sync-knowledge
+npm run sync-knowledge --workspace backend
 ```

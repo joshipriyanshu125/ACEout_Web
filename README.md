@@ -18,10 +18,10 @@ done what, and runs quizzes from a web admin panel.
 
 | Path | What | Dev URL |
 | --- | --- | --- |
-| `apps/backend` | Express + Prisma 6 + PostgreSQL, JWT auth | http://localhost:5000 |
+| `apps/backend` | Express + PostgreSQL, JWT auth, and the voice assistant for the app's "Ask AI" (`src/voice/`) | http://localhost:5000 |
+| `packages/db` (`@repo/db`) | Prisma 6 schema, migrations, seed and the shared client | |
 | `apps/administrator` | Admin panel, React 19 + Vite (the "Admin Panel.html" design) | http://localhost:5174 |
-| `apps/ACEout/app` | Expo SDK 57 student app (the lab benches) | `npm start` inside it |
-| `apps/ACEout/server` | Voice-assistant proxy for the app's "Ask AI" | http://localhost:3000 |
+| `apps/ACEout/app` | Expo SDK 57 student app (the lab benches). Not a backend: it only calls `apps/backend` | http://localhost:8081 (Expo) |
 
 ## Setup
 
@@ -29,17 +29,22 @@ Requires Node 20+ and PostgreSQL.
 
 ```bash
 npm install
+npm install --prefix apps/ACEout/app                # the Expo app keeps its own node_modules
 createdb aceout_lab
-cp apps/backend/.env.example apps/backend/.env      # set DATABASE_URL
-npm run db:migrate --workspace backend              # or: npx prisma migrate deploy
-npm run db:seed --workspace backend
-npm run dev                                         # backend + admin panel
+cp apps/backend/.env.example apps/backend/.env      # set DATABASE_URL (used by the API)
+cp packages/db/.env.example packages/db/.env        # same DATABASE_URL (used by the Prisma CLI)
+npm run db:migrate                                  # or: npm run db:deploy
+npm run db:seed
+npm run dev                                         # backend + admin panel + Expo app
 ```
 
-The phone app runs separately: `cd apps/ACEout/app && npm start`. Point it at the API with
+`npm run dev` also starts Expo for the phone app (focus its pane in the Turbo UI to use Expo's
+keys and QR code). Point it at the API with
 `EXPO_PUBLIC_LAB_API_URL` in `apps/ACEout/app/.env` (see `.env.example`: `http://10.0.2.2:5000`
 on the Android emulator, `http://<your-LAN-IP>:5000` on a real phone). The admin panel reads
-`VITE_API_URL` (default `http://localhost:5000/api`).
+`VITE_API_URL` (default `http://localhost:5000/api`). The voice assistant is on the same server:
+set `EXPO_PUBLIC_API_BASE_URL` to the same address, and put `DEEPGRAM_API_KEY` / `GEMINI_API_KEY`
+in `apps/backend/.env`.
 
 ## Demo accounts (from the seed)
 

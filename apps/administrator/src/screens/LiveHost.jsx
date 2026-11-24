@@ -7,6 +7,7 @@ import { Breadcrumb } from "../ui/bits.jsx";
 import { Button } from "../ui/Button.jsx";
 import { ErrorState, Loading } from "../ui/states.jsx";
 import { C, fr } from "../ui/theme.js";
+import { hostQuiz } from "./Quizzes.jsx";
 
 const TILES = [C.blue, C.red, C.amber, C.green, C.purple, C.teal];
 const POLL_MS = 1000;
@@ -61,6 +62,17 @@ export default function LiveHost({ sessionId }) {
     } catch (e) {
       app.toast(e.message, "error");
     } finally {
+      setBusy("");
+    }
+  }
+
+  /** Starts a fresh session of the same quiz; past runs keep their results. */
+  async function runAgain() {
+    setBusy("again");
+    try {
+      await hostQuiz(s.quiz.id, app);
+    } catch (e) {
+      app.toast(e.message, "error");
       setBusy("");
     }
   }
@@ -250,6 +262,11 @@ export default function LiveHost({ sessionId }) {
               <Button variant="light" onClick={() => navigate(path("quizzes", s.quiz.id, "results", s.id))} style={{ padding: "12px 22px", marginTop: 8 }}>
                 Open full results
               </Button>
+              {app.canEdit && (
+                <Button variant="green" busy={busy === "again"} onClick={runAgain} style={{ padding: "12px 22px" }}>
+                  Run quiz again
+                </Button>
+              )}
             </div>
           )}
         </div>
